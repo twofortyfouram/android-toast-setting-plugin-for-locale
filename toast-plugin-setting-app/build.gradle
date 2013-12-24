@@ -1,0 +1,51 @@
+apply plugin: 'android'
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    compile group:'net.jcip', name:'jcip-annotations', version:'1.0'
+    compile group:'com.twofortyfouram', name:'android-annotation', version:'[1.0.2,3.0['
+    compile group:'com.twofortyfouram', name:'android-assertion', version:'[1.0.1,2.0['
+    compile group:'com.twofortyfouram', name:'android-plugin-api-for-locale', version:'[1.0.0,2.0['
+    compile group:'com.twofortyfouram', name:'android-plugin-client-sdk-for-locale', version:'[1.0.0,2.0['
+    compile group:'com.twofortyfouram', name:'android-spackle', version:'[1.0.1,2.0['
+    androidTestCompile group:'com.twofortyfouram', name:'android-test', version:'[1.0.2,2.0['
+}
+
+android {
+    compileSdkVersion Integer.parseInt(ANDROID_COMPILE_SDK_VERSION)
+    buildToolsVersion ANDROID_BUILD_TOOLS_VERSION
+
+    defaultConfig {
+        minSdkVersion Integer.parseInt(ANDROID_MIN_SDK_VERSION)
+        targetSdkVersion Integer.parseInt(ANDROID_TARGET_SDK_VERSION)
+        versionCode Integer.parseInt(ANDROID_VERSION_CODE)
+        versionName ANDROID_VERSION_NAME
+    }
+
+    if (RELEASE_KEYSTORE && RELEASE_KEYSTORE_PASSWORD && RELEASE_KEY_ALIAS && RELEASE_KEY_ALIAS_PASSWORD) {
+        signingConfigs {
+            release {
+                storeFile file(RELEASE_KEYSTORE)
+                storePassword RELEASE_KEYSTORE_PASSWORD
+                keyAlias RELEASE_KEY_ALIAS
+                keyPassword RELEASE_KEY_ALIAS_PASSWORD
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            testCoverageEnabled true
+            packageNameSuffix ".debug"
+            zipAlign true
+        }
+        release {
+            // Disable ProGuard until this bug is fixed https://code.google.com/p/android/issues/detail?id=69625
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-project.txt'
+            if (RELEASE_KEYSTORE && RELEASE_KEYSTORE_PASSWORD && RELEASE_KEY_ALIAS && RELEASE_KEY_ALIAS_PASSWORD) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+}
