@@ -3,8 +3,15 @@ jdk: oraclejdk7
 
 android:
   components:
+    - platform-tools
+    - tools
+    - build-tools-20.0.0
+    
     - android-8
-    - build-tools-19.1.0
+    - android-10
+    - android-19
+    - extra-google-m2repository
+    - extra-android-m2repository
   licenses:
     - 'android-sdk-license-.*'
 
@@ -14,17 +21,13 @@ env:
     - ANDROID_SDKS=android-10            ANDROID_TARGET=android-10  ANDROID_ABI=armeabi
     - ANDROID_SDKS=android-19,sysimg-19  ANDROID_TARGET=android-19  ANDROID_ABI=armeabi-v7a
 
-before_install:
-    # Create and start emulator
-    - echo no | android create avd --force --name test --target $ANDROID_TARGET --abi $ANDROID_ABI
-    - emulator -avd test -no-skin -no-audio -no-window &
-
 install:
     # Without TERM=dumb, we get mangled output in the Travis console
     - TERM=dumb ./gradlew assemble
 
+# Emulator Management: Create, Start and Wait
 before_script:
-    - ./.ci/wait_for_emulator
-
-script:
-    - TERM=dumb ./gradlew connectedCheck
+  - echo no | android create avd --force -n test --target $ANDROID_TARGET --abi $ANDROID_ABI
+  - emulator -avd test -no-skin -no-audio -no-window &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &

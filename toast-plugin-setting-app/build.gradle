@@ -1,14 +1,14 @@
-apply plugin: 'android'
+apply plugin: 'com.android.application'
+apply plugin: 'findbugs'
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     compile group:'net.jcip', name:'jcip-annotations', version:'1.0'
     compile group:'com.twofortyfouram', name:'android-annotation', version:'[1.0.2,3.0['
-    compile group:'com.twofortyfouram', name:'android-assertion', version:'[1.0.1,2.0['
-    compile group:'com.twofortyfouram', name:'android-plugin-api-for-locale', version:'[1.0.0,2.0['
+    compile group:'com.twofortyfouram', name:'android-assertion', version:'[1.0.2,2.0['
+    compile group:'com.twofortyfouram', name:'android-plugin-api-for-locale', version:'[1.0.1,2.0['
     compile group:'com.twofortyfouram', name:'android-plugin-client-sdk-for-locale', version:'[1.0.0,2.0['
-    compile group:'com.twofortyfouram', name:'android-spackle', version:'[1.0.1,2.0['
-    androidTestCompile group:'com.twofortyfouram', name:'android-test', version:'[1.0.2,2.0['
+    compile group:'com.twofortyfouram', name:'android-spackle', version:'[1.0.4,2.0['
+    androidTestCompile group:'com.twofortyfouram', name:'android-test', version:'[1.0.4,2.0['
 }
 
 android {
@@ -36,7 +36,7 @@ android {
     buildTypes {
         debug {
             testCoverageEnabled true
-            packageNameSuffix ".debug"
+            applicationIdSuffix ".debug"
             zipAlign true
         }
         release {
@@ -47,5 +47,19 @@ android {
                 signingConfig signingConfigs.release
             }
         }
+    }
+}
+
+task findbugs(type: FindBugs) {
+    ignoreFailures = true
+    classes = fileTree('build/intermediates/classes/release/')
+    source = fileTree('src/main/java/')
+    classpath = files()
+    effort = 'max'
+    reportLevel = 'low'
+    reports {
+        // Only one report type can be enabled at a time, apparently.
+        xml.enabled = false
+        html.enabled = true
     }
 }
