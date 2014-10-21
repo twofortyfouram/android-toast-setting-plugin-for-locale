@@ -35,13 +35,13 @@ android {
 
     buildTypes {
         debug {
-            testCoverageEnabled true
+            testCoverageEnabled Boolean.parseBoolean(IS_COVERAGE_ENABLED)
             applicationIdSuffix ".debug"
             zipAlign true
         }
         release {
             // Disable ProGuard until this bug is fixed https://code.google.com/p/android/issues/detail?id=69625
-            runProguard false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-project.txt'
             if (RELEASE_KEYSTORE && RELEASE_KEYSTORE_PASSWORD && RELEASE_KEY_ALIAS && RELEASE_KEY_ALIAS_PASSWORD) {
                 signingConfig signingConfigs.release
@@ -55,11 +55,13 @@ task findbugs(type: FindBugs) {
     classes = fileTree('build/intermediates/classes/release/')
     source = fileTree('src/main/java/')
     classpath = files()
+    excludeFilter = file("$rootProject.projectDir/tools/findbugs/android-filter.xml")
     effort = 'max'
     reportLevel = 'low'
     reports {
         // Only one report type can be enabled at a time, apparently.
         xml.enabled = false
         html.enabled = true
+        html.destination = "$project.buildDir/outputs/reports/findbugs/findbugs.html"
     }
 }
