@@ -1,10 +1,11 @@
 language: android
-jdk: oraclejdk7
+jdk: oraclejdk8
+sudo: false
 
 android:
   components:
     - platform-tools-21.0.0
-    - tools-24.0.1
+    - tools-24.0.2
     - build-tools-21.1.2
     
     - android-8
@@ -28,7 +29,7 @@ before_script:
     - adb shell input keyevent 82 &
 
 script:
-  - TERM=dumb ./gradlew assemble connectedCheck check findbugs
+  - TERM=dumb ./gradlew -PIS_PREDEXING_ENABLED=false -PIS_COVERAGE_ENABLED=true assemble connectedCheck check findbugs
 
 addons:
   artifacts:
