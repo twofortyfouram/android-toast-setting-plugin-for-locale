@@ -20,6 +20,10 @@ android {
         targetSdkVersion Integer.parseInt(ANDROID_TARGET_SDK_VERSION)
         versionCode Integer.parseInt(ANDROID_VERSION_CODE)
         versionName ANDROID_VERSION_NAME
+
+        // Keep only the default and English localizations; which reduces app size since
+        // dependencies contain localizations.
+        resConfigs 'en'
     }
 
     if (RELEASE_KEYSTORE && RELEASE_KEYSTORE_PASSWORD && RELEASE_KEY_ALIAS && RELEASE_KEY_ALIAS_PASSWORD) {
@@ -40,9 +44,11 @@ android {
             zipAlignEnabled true
         }
         release {
-            // Disable ProGuard until this bug is fixed https://code.google.com/p/android/issues/detail?id=69625
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-project.txt'
+
+            shrinkResources true
+
             if (RELEASE_KEYSTORE && RELEASE_KEYSTORE_PASSWORD && RELEASE_KEY_ALIAS && RELEASE_KEY_ALIAS_PASSWORD) {
                 signingConfig signingConfigs.release
             }
