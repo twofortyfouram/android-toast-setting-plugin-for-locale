@@ -2,13 +2,15 @@ apply plugin: 'com.android.application'
 apply plugin: 'findbugs'
 
 dependencies {
-    compile group:'net.jcip', name:'jcip-annotations', version:'1.0'
-    compile group:'com.twofortyfouram', name:'android-annotation', version:'[1.0.2,3.0['
-    compile group:'com.twofortyfouram', name:'android-assertion', version:'[1.0.2,2.0['
-    compile group:'com.twofortyfouram', name:'android-plugin-api-for-locale', version:'[1.0.1,2.0['
-    compile group:'com.twofortyfouram', name:'android-plugin-client-sdk-for-locale', version:'[1.0.0,2.0['
-    compile group:'com.twofortyfouram', name:'android-spackle', version:'[1.0.4,2.0['
-    androidTestCompile group:'com.twofortyfouram', name:'android-test', version:'[1.0.4,2.0['
+    compile group:'net.jcip', name:'jcip-annotations', version:"${JCIP_ANNOTATION_VERSION_MATCHER}"
+    compile group:'com.android.support', name:'support-annotations', version:"${ANDROID_SUPPORT_ANNOTATION_VERSION_MATCHER}"
+    compile group:'com.twofortyfouram', name:'android-annotation', version:"${TWOFORTYFOURAM_ANNOTATION_VERSION_MATCHER}"
+    compile group:'com.twofortyfouram', name:'android-assertion', version:"${TWOFORTYFOURAM_ASSERTION_VERSION_MATCHER}"
+    compile group:'com.twofortyfouram', name:'android-plugin-api-for-locale', version:"${TWOFORTYFOURAM_PLUGIN_API_VERSION_MATCHER}"
+    compile group:'com.twofortyfouram', name:'android-plugin-client-sdk-for-locale', version:"${TWOFORTYFOURAM_PLUGIN_CLIENT_SDK_VERSION_MATCHER}"
+    compile group:'com.twofortyfouram', name:'android-spackle', version:"${TWOFORTYFOURAM_SPACKLE_VERSION_MATCHER}"
+
+    androidTestCompile group:'com.twofortyfouram', name:'android-test', version:"${TWOFORTYFOURAM_TEST_VERSION_MATCHER}"
 }
 
 android {
