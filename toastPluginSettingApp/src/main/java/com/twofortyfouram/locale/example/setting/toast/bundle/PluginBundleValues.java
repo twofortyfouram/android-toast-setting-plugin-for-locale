@@ -18,7 +18,7 @@ package com.twofortyfouram.locale.example.setting.toast.bundle;
 import com.twofortyfouram.assertion.Assertions;
 import com.twofortyfouram.assertion.BundleAssertions;
 import com.twofortyfouram.log.Lumberjack;
-import com.twofortyfouram.spackle.util.AppBuildInfo;
+import com.twofortyfouram.spackle.AppBuildInfo;
 
 import net.jcip.annotations.ThreadSafe;
 
@@ -26,6 +26,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
+import static com.twofortyfouram.assertion.Assertions.assertNotEmpty;
+import static com.twofortyfouram.assertion.Assertions.assertNotNull;
 
 /**
  * Manages the {@link com.twofortyfouram.locale.api.Intent#EXTRA_BUNDLE EXTRA_BUNDLE} for this
@@ -55,8 +58,7 @@ public final class PluginBundleValues {
      */
     @NonNull
     public static final String BUNDLE_EXTRA_INT_VERSION_CODE
-            = "com.twofortyfouram.locale.example.setting.toast.extra.INT_VERSION_CODE";
-            //$NON-NLS-1$
+            = "com.twofortyfouram.locale.example.setting.toast.extra.INT_VERSION_CODE"; //$NON-NLS-1$
 
     /**
      * Method to verify the content of the bundle are correct.
@@ -91,8 +93,8 @@ public final class PluginBundleValues {
     @NonNull
     public static Bundle generateBundle(@NonNull final Context context,
             @NonNull final String message) {
-        Assertions.assertNotNull(context, "context"); //$NON-NLS-1$
-        Assertions.assertNotEmpty(message, "message"); //$NON-NLS-1$
+        assertNotNull(context, "context"); //$NON-NLS-1$
+        assertNotEmpty(message, "message"); //$NON-NLS-1$
 
         final Bundle result = new Bundle();
         result.putInt(BUNDLE_EXTRA_INT_VERSION_CODE, AppBuildInfo.getVersionCode(context));

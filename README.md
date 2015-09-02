@@ -1,9 +1,9 @@
 [![Build Status](https://travis-ci.org/twofortyfouram/android-toast-setting-plugin-for-locale.png?branch=master)](https://travis-ci.org/twofortyfouram/android-toast-setting-plugin-for-locale)
 
 # Overview
-[Locale](https://play.google.com/store/apps/details?id=com.twofortyfouram.locale) allows developers to create plug-in conditions and settings.  The android-toast-setting-plugin-for-locale implements an example plug-in setting.  This project is the final layer of the [Locale Developer Platform documentation](http://www.twofortyfouram.com/developer).
+[Locale](https://play.google.com/store/apps/details?id=com.twofortyfouram.locale) allows developers to create plug-in conditions and settings.  The android-toast-setting-plugin-for-locale implements an example plug-in setting.  This project is the final layer of the [Locale Developer Platform](http://www.twofortyfouram.com/developer).
 
-Although there are multiple ways to approach building a plug-in, we recommend forking this project as the starting point.
+Although there are multiple ways to approach building a plug-in setting, we recommend forking this project as the starting point.
 
 
 # Compatibility

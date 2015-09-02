@@ -52,13 +52,14 @@ public final class EditActivity extends AbstractLocalePluginActivity {
         Bundle result = null;
 
         final String message = ((EditText) findViewById(android.R.id.text1)).getText().toString();
-        if (message.length() > 0) {
+        if (0 < message.length()) {
             result = PluginBundleValues.generateBundle(getApplicationContext(), message);
         }
 
         return result;
     }
 
+    @NonNull
     @Override
     public String getResultBlurb(@NonNull final Bundle bundle) {
         final String message = PluginBundleValues.getMessage(bundle);

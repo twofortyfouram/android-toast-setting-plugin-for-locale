@@ -15,11 +15,11 @@
 
 package com.twofortyfouram.locale.example.setting.toast.bundle;
 
-import com.twofortyfouram.spackle.util.AppBuildInfo;
-
 import android.os.Bundle;
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
+
+import com.twofortyfouram.spackle.AppBuildInfo;
 
 /**
  * Tests {@link PluginBundleValues}.

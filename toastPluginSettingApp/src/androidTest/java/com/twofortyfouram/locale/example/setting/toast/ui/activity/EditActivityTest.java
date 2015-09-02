@@ -15,11 +15,6 @@
 
 package com.twofortyfouram.locale.example.setting.toast.ui.activity;
 
-import com.twofortyfouram.assertion.Assertions;
-import com.twofortyfouram.locale.example.setting.toast.R;
-import com.twofortyfouram.locale.example.setting.toast.bundle.PluginBundleValues;
-import com.twofortyfouram.test.ui.activity.ActivityTestUtil;
-
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
@@ -32,7 +27,9 @@ import android.test.suitebuilder.annotation.MediumTest;
 import android.text.TextUtils;
 import android.widget.EditText;
 
-import java.lang.reflect.Field;
+import com.twofortyfouram.locale.example.setting.toast.R;
+import com.twofortyfouram.locale.example.setting.toast.bundle.PluginBundleValues;
+import com.twofortyfouram.test.ui.activity.ActivityTestUtil;
 
 /**
  * Tests the {@link EditActivity}.
@@ -85,6 +82,8 @@ public final class EditActivityTest extends ActivityInstrumentationTestCase2<Edi
             setActivityIntent(new Intent(com.twofortyfouram.locale.api.Intent.ACTION_EDIT_SETTING)
                     .putExtra(com.twofortyfouram.locale.api.Intent.EXTRA_STRING_BREADCRUMB,
                             "Locale > Edit Situation")
+                    .putExtra(com.twofortyfouram.locale.api.Intent.EXTRA_STRING_BLURB,
+                            "I am a toast message!")
                     .putExtra(com.twofortyfouram.locale.api.Intent.EXTRA_BUNDLE,
                             bundle)); //$NON-NLS-1$
         } else if ("testBadBundle".equals(getName())) {  //$NON-NLS-1$
@@ -147,7 +146,8 @@ public final class EditActivityTest extends ActivityInstrumentationTestCase2<Edi
 
         activity.finish();
 
-        assertEquals(Activity.RESULT_CANCELED, ActivityTestUtil.getActivityResultCode(activity));
+        assertEquals(Activity.RESULT_CANCELED, ActivityTestUtil.getActivityResultCode
+                (activity));
     }
 
     /**
@@ -162,7 +162,8 @@ public final class EditActivityTest extends ActivityInstrumentationTestCase2<Edi
         assertHintAutoSync(mTargetContext.getString(R.string.message_hint));
 
         activity.finish();
-        assertEquals(Activity.RESULT_CANCELED, ActivityTestUtil.getActivityResultCode(activity));
+        assertEquals(Activity.RESULT_CANCELED, ActivityTestUtil.getActivityResultCode
+                (activity));
     }
 
     /**
@@ -177,9 +178,11 @@ public final class EditActivityTest extends ActivityInstrumentationTestCase2<Edi
             public void run() {
                 activity.finish();
 
-                assertEquals(Activity.RESULT_OK, ActivityTestUtil.getActivityResultCode(activity));
+                assertEquals(Activity.RESULT_OK, ActivityTestUtil.getActivityResultCode
+                        (activity));
 
-                final Intent result = ActivityTestUtil.getActivityResultData(activity);
+                final Intent result = ActivityTestUtil.getActivityResultData
+                        (activity);
                 assertNotNull(result);
 
                 final Bundle extras = result.getExtras();
@@ -190,7 +193,7 @@ public final class EditActivityTest extends ActivityInstrumentationTestCase2<Edi
                                 com.twofortyfouram.locale.api.Intent.EXTRA_BUNDLE,
                                 com.twofortyfouram.locale.api.Intent.EXTRA_STRING_BLURB,
                                 extras.keySet()), 2, extras.keySet() //$NON-NLS-1$
-                        .size());
+                                .size());
 
                 assertFalse(TextUtils.isEmpty(extras
                         .getString(com.twofortyfouram.locale.api.Intent.EXTRA_STRING_BLURB)));
@@ -270,6 +273,7 @@ public final class EditActivityTest extends ActivityInstrumentationTestCase2<Edi
      * @param runnable to execute.
      */
     protected final void autoSyncRunnable(final Runnable runnable) {
+        //noinspection ObjectEquality
         if (Looper.getMainLooper() == Looper.myLooper()) {
             runnable.run();
         } else {

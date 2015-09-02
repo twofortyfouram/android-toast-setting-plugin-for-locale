@@ -39,8 +39,6 @@ public final class ManifestTest extends AndroidTestCase {
 
     @SmallTest
     public void testPluginActivityPresent() {
-        final PackageManager packageManager = getContext().getPackageManager();
-
         final List<ResolveInfo> activities = getPluginActivities(getContext());
         assertFalse(activities.isEmpty());
 
@@ -67,8 +65,6 @@ public final class ManifestTest extends AndroidTestCase {
 
     @SmallTest
     public void testPluginReceiver() {
-        final PackageManager packageManager = getContext().getPackageManager();
-
         final List<ResolveInfo> receivers = getPluginReceivers(getContext());
 
         assertEquals(1, receivers.size());
