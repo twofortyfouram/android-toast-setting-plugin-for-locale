@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!-- App indexing for this app makes no sense. -->
+    <issue id="GoogleAppIndexingWarning" severity="ignore"/>
+</lint>

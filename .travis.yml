@@ -5,14 +5,14 @@ sudo: false
 android:
   components:
     - build-tools-23.0.1
+    - tools
+    - platform-tools
 
     - extra-android-m2repository # Exact version specified in gradle.properties; OK to fetch latest version here.
     
     - android-8
-    - android-19
     - android-22
     - android-23
-    - extra-android-m2repository
     - sys-img-armeabi-v7a-android-22
   licenses:
     - 'android-sdk-license-.*'
@@ -22,7 +22,7 @@ env:
     # Ideally, the matrix would run against 8, 10, 19, 22, 23.  However that
     # takes too long and CI builds are flaky enough to make all the different
     # sets of tests unlikely to succeed.  So the min and max are tested as an
-    # optimization.  Note that android-22/23 currently hangs in CI, so 19 is
+    # optimization.  Note that android-23 currently hangs in CI, so 22 is
     # tested instead.
     - AVD_API_LEVEL=android-8
     - AVD_API_LEVEL=android-22

@@ -28,10 +28,10 @@ android {
         resConfigs 'en'
     }
 
-    if (RELEASE_KEYSTORE && RELEASE_KEYSTORE_PASSWORD && RELEASE_KEY_ALIAS && RELEASE_KEY_ALIAS_PASSWORD) {
+    if (RELEASE_KEYSTORE_PATH && RELEASE_KEYSTORE_PASSWORD && RELEASE_KEY_ALIAS && RELEASE_KEY_ALIAS_PASSWORD) {
         signingConfigs {
             release {
-                storeFile file(RELEASE_KEYSTORE)
+                storeFile file(RELEASE_KEYSTORE_PATH)
                 storePassword RELEASE_KEYSTORE_PASSWORD
                 keyAlias RELEASE_KEY_ALIAS
                 keyPassword RELEASE_KEY_ALIAS_PASSWORD
@@ -51,7 +51,7 @@ android {
 
             shrinkResources true
 
-            if (RELEASE_KEYSTORE && RELEASE_KEYSTORE_PASSWORD && RELEASE_KEY_ALIAS && RELEASE_KEY_ALIAS_PASSWORD) {
+            if (RELEASE_KEYSTORE_PATH && RELEASE_KEYSTORE_PASSWORD && RELEASE_KEY_ALIAS && RELEASE_KEY_ALIAS_PASSWORD) {
                 signingConfig signingConfigs.release
             }
         }
