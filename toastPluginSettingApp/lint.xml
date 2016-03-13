@@ -2,4 +2,7 @@
 <lint>
     <!-- App indexing for this app makes no sense. -->
     <issue id="GoogleAppIndexingWarning" severity="ignore"/>
+
+    <!-- https://code.google.com/p/android/issues/detail?id=203407. -->
+    <issue id="ResourceCycle" severity="ignore"/>
 </lint>

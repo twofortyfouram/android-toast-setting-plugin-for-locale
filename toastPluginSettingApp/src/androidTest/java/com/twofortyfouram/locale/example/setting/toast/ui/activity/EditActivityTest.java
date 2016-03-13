@@ -178,11 +178,9 @@ public final class EditActivityTest extends ActivityInstrumentationTestCase2<Edi
             public void run() {
                 activity.finish();
 
-                assertEquals(Activity.RESULT_OK, ActivityTestUtil.getActivityResultCode
-                        (activity));
+                assertEquals(Activity.RESULT_OK, ActivityTestUtil.getActivityResultCode(activity));
 
-                final Intent result = ActivityTestUtil.getActivityResultData
-                        (activity);
+                final Intent result = ActivityTestUtil.getActivityResultData(activity);
                 assertNotNull(result);
 
                 final Bundle extras = result.getExtras();
@@ -240,7 +238,7 @@ public final class EditActivityTest extends ActivityInstrumentationTestCase2<Edi
 
             public void run() {
                 assertEquals(hint, ((EditText) mActivity.findViewById(android.R.id.text1))
-                        .getHint().toString());
+                        .getHint());
             }
         };
 
