@@ -11,7 +11,7 @@ android:
     - extra-android-m2repository # Exact version specified in gradle.properties; OK to fetch latest version here.
     
     - android-22
-    - android-23
+    - android-24
     - sys-img-armeabi-v7a-android-22
   licenses:
     - 'android-sdk-license-.*'
