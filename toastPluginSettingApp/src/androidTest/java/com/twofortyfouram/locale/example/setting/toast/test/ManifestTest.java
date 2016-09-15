@@ -108,7 +108,7 @@ public final class ManifestTest extends AndroidTestCase {
 
         for (final ResolveInfo x : context.getPackageManager().queryIntentActivities(
                 new Intent(com.twofortyfouram.locale.api.Intent.ACTION_EDIT_SETTING),
-                PackageManager.GET_ACTIVITIES)) {
+                0)) {
             if (packageName.equals(x.activityInfo.packageName)) {
                 result.add(x);
             }
@@ -130,7 +130,7 @@ public final class ManifestTest extends AndroidTestCase {
 
         for (final ResolveInfo x : context.getPackageManager().queryBroadcastReceivers(
                 new Intent(com.twofortyfouram.locale.api.Intent.ACTION_FIRE_SETTING),
-                PackageManager.GET_INTENT_FILTERS)) {
+                0)) {
             if (packageName.equals(x.activityInfo.packageName)) {
                 result.add(x);
             }
