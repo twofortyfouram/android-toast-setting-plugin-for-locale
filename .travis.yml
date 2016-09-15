@@ -10,7 +10,6 @@ android:
 
     - extra-android-m2repository # Exact version specified in gradle.properties; OK to fetch latest version here.
     
-    - android-8
     - android-22
     - android-23
     - sys-img-armeabi-v7a-android-22
@@ -19,12 +18,7 @@ android:
 
 env:
   matrix:
-    # Ideally, the matrix would run against 8, 10, 19, 22, 23.  However that
-    # takes too long and CI builds are flaky enough to make all the different
-    # sets of tests unlikely to succeed.  So the min and max are tested as an
-    # optimization.  Note that android-23 currently hangs in CI, so 22 is
-    # tested instead.
-    - AVD_API_LEVEL=android-8
+    # Note that android-23 currently hangs in CI, so 22 is tested instead.
     - AVD_API_LEVEL=android-22
 
 before_script:
