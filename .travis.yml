@@ -6,7 +6,7 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-24.0.2
+    - build-tools-25.0.0
 
     - extra-android-m2repository # Exact version specified in gradle.properties; OK to fetch latest version here.
     
