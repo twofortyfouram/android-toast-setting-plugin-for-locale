@@ -1,3 +1,5 @@
+boolean is_jack = Boolean.parseBoolean(IS_JACK_ENABLED)
+
 apply plugin: 'com.android.application'
 apply plugin: 'findbugs'
 
@@ -19,6 +21,7 @@ android {
     buildToolsVersion ANDROID_BUILD_TOOLS_VERSION
 
     defaultConfig {
+        jackOptions.enabled is_jack
         minSdkVersion Integer.parseInt(ANDROID_MIN_SDK_VERSION)
         targetSdkVersion Integer.parseInt(ANDROID_TARGET_SDK_VERSION)
         versionCode Integer.parseInt(ANDROID_VERSION_CODE)
