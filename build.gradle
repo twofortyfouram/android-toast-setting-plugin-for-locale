@@ -17,13 +17,4 @@ allprojects {
             options.compilerArgs << '-Xlint:all'
         }
     }
-
-    boolean is_predex = Boolean.parseBoolean(IS_PREDEXING_ENABLED)
-    project.plugins.whenPluginAdded { plugin ->
-        if ('com.android.build.gradle.AppPlugin'.equals(plugin.class.name) && null != plugin.project) {
-            project.android.dexOptions.preDexLibraries = is_predex
-        } else if ('com.android.build.gradle.LibraryPlugin'.equals(plugin.class.name) && null != plugin.project) {
-            project.android.dexOptions.preDexLibraries = is_predex
-        }
-    }
 }
