@@ -29,7 +29,8 @@ android {
 
         // Keep only the default and English localizations; which reduces app size since
         // dependencies contain localizations.
-        resConfigs 'en'
+        // The last two are for support of pseudolocales in debug builds.
+        resConfigs 'en', 'en-rUS', 'en_XA', 'ar_XB'
     }
 
     if (RELEASE_KEYSTORE_PATH && RELEASE_KEYSTORE_PASSWORD && RELEASE_KEY_ALIAS && RELEASE_KEY_ALIAS_PASSWORD) {
@@ -47,6 +48,7 @@ android {
         debug {
             testCoverageEnabled Boolean.parseBoolean(IS_COVERAGE_ENABLED)
             applicationIdSuffix '.debug'
+            pseudoLocalesEnabled true
             zipAlignEnabled true
         }
         release {
