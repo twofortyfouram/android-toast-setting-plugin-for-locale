@@ -4,13 +4,7 @@ toastPluginSettingApp:
   test: toastPluginSettingApp/build/outputs/apk/toastPluginSettingApp-debug-androidTest.apk
   timeout: 10m
   results-history-name: toastPluginSettingApp
-  include: [devices,supported-versions,coverage-environment-variables]
-
-devices:
-  device-ids: [Nexus4,NexusLowRes]
-
-supported-versions:
-  os-version-ids: [19,25]
+  include: [coverage-environment-variables]
 
 coverage-environment-variables:
   environment-variables:
