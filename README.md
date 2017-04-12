@@ -18,4 +18,4 @@ The following steps are necessary to fork this project
 1. Optional: For CircleCI continous integration (CI)
     1. Create a [Firebase](https://firebase.google.com) project
     1. Configure the Firebase project with a [service account](https://firebase.google.com/docs/test-lab/continuous)
-    1. On CircleCI, add environment variables for `GCLOUD_SERVICE_KEY_BASE_64` which is the base64 encoded JSON service key and `GCLOUD_PROJECT_ID` which is the project ID.
+    1. On CircleCI, add environment variables for `GCLOUD_SERVICE_KEY_BASE_64` which is the base64 encoded JSON service key, `GCLOUD_PROJECT_ID` which is the project ID, and `GCLOUD_DEFAULT_BUCKET` which is the default free bucket included with Firebase Test Lab.

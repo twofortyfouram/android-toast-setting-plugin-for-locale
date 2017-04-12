@@ -20,7 +20,7 @@
 # 4. Additional Firebase Test Lab arguments, as a quoted string.
 
 # Example usage:
-# ./tools/ci/firebase-test-lab-test-module.sh spackleLib test-lab-beep-boop "model=NexusLowRes,version=25,orientation=portrait"
+# ./tools/ci/firebase-test-lab-test-module.sh spackleLib test-lab-5fjjivmbih0ck-i7fd9i4fw50ym "model=NexusLowRes,version=25,orientation=portrait"
 
 set -e
 
@@ -31,7 +31,14 @@ gcloud_args="$4"
 
 uuid=`uuidgen`
 
+# If a test case fails, exit code 10 will be returned. The script should continue if that occurs.
+set +e
 gcloud firebase test android run --results-dir=${uuid} tools/gcloud.yml:${module} --device ${device} ${gcloud_args}
+gcloud_exit_code=$?
+set -e
+
+if [[ $gcloud_exit_code != 0 && $gcloud_exit_code != 10 ]]; then exit $gcloud_exit_code; fi
+
 
 # Copy test results.
 echo "Fetching test results"
