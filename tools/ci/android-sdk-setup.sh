@@ -8,7 +8,7 @@
 #
 # The script expects several parameters in this order:
 # 1. android home directory, e.g. ~/android-sdk
-# 2. Android tools version, e.g. 25.2.5
+# 2. Android tools version, e.g. 3859397
 # 3. flag path, e.g. ~/flags/android-sdk-setup
 # 4. android sdk components, as used by `sdkmanager`.  e.g. "platforms;android-25" "build-tools;25.0.2" "platform-tools" "docs" "extras;android;m2repository"
 
@@ -26,7 +26,7 @@ if ! test -f ${android_sdk_flag_file}; then
   # Optionally download the SDK, as it might already exist in some environments.
   if ! test -d $android_sdk_installation_dir; then
     mkdir -p $android_sdk_installation_dir
-    curl -o $HOME/android-sdk-temp.zip "https://dl.google.com/android/repository/tools_r${android_tools_version}-linux.zip"
+    curl -o $HOME/android-sdk-temp.zip "https://dl.google.com/android/repository/sdk-tools-linux-${android_tools_version}.zip"
     unzip $HOME/android-sdk-temp.zip -d $android_sdk_installation_dir
     rm $HOME/android-sdk-temp.zip
   fi
