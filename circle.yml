@@ -22,7 +22,7 @@ dependencies:
   pre:
     - mkdir -p ~/flags
     - mkdir -p ~/mybin
-    - ./tools/ci/android-sdk-setup.sh ${ANDROID_HOME} 3859397 ~/flags/android-sdk "tools" "platforms;android-25" "build-tools;25.0.2" "platform-tools" "docs"
+    - ./tools/ci/android-sdk-setup.sh ${ANDROID_HOME} 3859397 ~/flags/android-sdk "tools" "platforms;android-25" "build-tools;25.0.3" "platform-tools" "docs"
     - PATH="/home/ubuntu/mybin/gcloud/bin:${PATH}" && ./tools/ci/google-cloud-test-lab-setup.sh /home/ubuntu/mybin/gcloud 155.0.0 ~/flags/gcloud-setup ${GCLOUD_SERVICE_KEY_BASE_64} ${GCLOUD_PROJECT_ID}
     - sudo apt-get update; sudo apt-get install parallel
   override:
