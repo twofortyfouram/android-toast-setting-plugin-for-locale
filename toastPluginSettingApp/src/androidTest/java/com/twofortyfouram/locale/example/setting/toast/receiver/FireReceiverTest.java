@@ -1,32 +1,36 @@
 /*
- * android-toast-setting-plugin-for-locale <https://github.com/twofortyfouram/android-toast-setting-plugin-for-locale>
- * Copyright 2014 two forty four a.m. LLC
+ * android-toast-setting-plugin-for-locale https://github.com/twofortyfouram/android-toast-setting-plugin-for-locale
+ * Copyright (C) 2009–2018 two forty four a.m. LLC
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *  http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the
- * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.twofortyfouram.locale.example.setting.toast.receiver;
 
-import com.twofortyfouram.locale.example.setting.toast.bundle.PluginBundleValues;
-
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.os.Bundle;
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.SmallTest;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.filters.SmallTest;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-/**
- * Tests the {@link FireReceiver}.
- */
-public final class FireReceiverTest extends AndroidTestCase {
+import com.twofortyfouram.locale.api.LocalePluginIntent;
+import com.twofortyfouram.locale.example.setting.toast.bundle.PluginJsonValues;
+import org.json.JSONObject;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+@RunWith(AndroidJUnit4.class)
+public final class FireReceiverTest {
     /*
      * These test cases perform sanity checks. These tests are not very extensive and additional
      * testing is required to verify the BroadcastReceiver works correctly. For example, a human
@@ -37,30 +41,36 @@ public final class FireReceiverTest extends AndroidTestCase {
      */
 
     @SmallTest
-    public void testNullMessage() {
+    @Test
+    public void bad_json() {
         final BroadcastReceiver fireReceiver = new FireReceiver();
 
-        final Bundle bundle = PluginBundleValues
-                .generateBundle(getContext(), "test_message"); //$NON-NLS-1$
-        bundle.putString(PluginBundleValues.BUNDLE_EXTRA_STRING_MESSAGE, null);
+        final JSONObject json = new JSONObject();
+
+        final Bundle bundle = new Bundle();
+        bundle.putString(LocalePluginIntent.EXTRA_STRING_JSON, json.toString());
 
         /*
-         * The receiver shouldn't crash if the EXTRA_BUNDLE is incorrect
+         * The receiver shouldn't crash if the JSON is incorrect
          */
-        fireReceiver.onReceive(getContext(), new Intent(
-                com.twofortyfouram.locale.api.Intent.ACTION_FIRE_SETTING).putExtra(
-                com.twofortyfouram.locale.api.Intent.EXTRA_BUNDLE, bundle));
+        fireReceiver.onReceive(ApplicationProvider.getApplicationContext(), new Intent(
+                LocalePluginIntent.ACTION_FIRE_SETTING).putExtra(
+                LocalePluginIntent.EXTRA_BUNDLE, bundle));
     }
 
     @SmallTest
-    public void testNormal() {
+    @Test
+    public void normal() {
         final BroadcastReceiver fireReceiver = new FireReceiver();
 
-        final Bundle bundle = PluginBundleValues
-                .generateBundle(getContext(), "test_message"); //$NON-NLS-1$
+        final JSONObject json = PluginJsonValues
+                .generateJson(ApplicationProvider.getApplicationContext(), "test_message"); //$NON-NLS-1$
 
-        fireReceiver.onReceive(getContext(), new Intent(
-                com.twofortyfouram.locale.api.Intent.ACTION_FIRE_SETTING).putExtra(
-                com.twofortyfouram.locale.api.Intent.EXTRA_BUNDLE, bundle));
+        final Bundle bundle = new Bundle();
+        bundle.putString(LocalePluginIntent.EXTRA_STRING_JSON, json.toString());
+
+        fireReceiver.onReceive(ApplicationProvider.getApplicationContext(), new Intent(
+                LocalePluginIntent.ACTION_FIRE_SETTING).putExtra(
+                LocalePluginIntent.EXTRA_BUNDLE, bundle));
     }
 }

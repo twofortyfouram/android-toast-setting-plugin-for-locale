@@ -1,28 +1,44 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ android-toast-setting-plugin-for-locale https://github.com/twofortyfouram/android-toast-setting-plugin-for-locale
+  ~ Copyright (C) 2009–2018 two forty four a.m. LLC
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+  ~ this file except in compliance with the License. You may obtain a copy of the
+  ~ License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software distributed
+  ~ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  ~ CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  ~ specific language governing permissions and limitations under the License.
+  -->
+
 <!--
      Because plug-ins interact with the host in the background, plug-ins MUST be installed to
      internal memory. This is consistent with Google's app install location guidelines:
      <http://developer.android.com/guide/appendix/install-location.html#Should>.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="com.twofortyfouram.locale.example.setting.toast"
-          android:installLocation="internalOnly">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.twofortyfouram.locale.example.setting.toast"
+    android:installLocation="internalOnly">
 
     <!-- This allows the plug-in to appear on non-touchscreen devices like Google TV.
     Be sure to test that the app works without a touchscreen. -->
     <uses-feature
-            android:name="android.hardware.touchscreen"
-            android:required="false"/>
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
 
     <!-- Although many of these default to true, some users with modified ROMs have
          trouble seeing apps unless these attributes are explicitly set. -->
     <supports-screens
-            android:anyDensity="true"
-            android:largeScreens="true"
-            android:normalScreens="true"
-            android:smallScreens="true"
-            android:xlargeScreens="true" tools:ignore="UnusedAttribute"/>
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true"
+        tools:ignore="UnusedAttribute" />
 
     <!-- When hardware acceleration is enabled, the RAM memory usage of the app is
          significantly increased as soon as any UI is displayed. To reduce the memory
@@ -31,22 +47,22 @@
          applicable Service) should be put into a different process. This example plug-in
          creates two processes. -->
     <application
-            android:name="com.twofortyfouram.locale.example.setting.toast.PluginApplication"
-            android:allowBackup="true"
-            android:fullBackupContent="true"
-            android:hardwareAccelerated="true"
-            android:icon="@drawable/ic_launcher"
-            android:label="@string/app_name" tools:ignore="UnusedAttribute">
+        android:name="com.twofortyfouram.locale.example.setting.toast.PluginApplication"
+        android:allowBackup="true"
+        android:fullBackupContent="true"
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        tools:ignore="UnusedAttribute">
 
         <activity
-                android:name="com.twofortyfouram.locale.example.setting.toast.ui.activity.EditActivity"
-                android:exported="false"
-                android:label="@string/plugin_name"
-                android:theme="@style/Theme.AppCompat"
-                android:uiOptions="splitActionBarWhenNarrow"
-                android:windowSoftInputMode="adjustResize"
-                tools:ignore="UnusedAttribute">
-        </activity>
+            android:name="com.twofortyfouram.locale.example.setting.toast.ui.activity.EditActivity"
+            android:exported="false"
+            android:label="@string/plugin_name"
+            android:theme="@style/Theme.AppCompat"
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:windowSoftInputMode="adjustResize"
+            tools:ignore="UnusedAttribute"/>
         <!--
              This is the "edit" Activity. Note that the host will reject plug-in
              Activities for the following reasons:
@@ -57,15 +73,15 @@
                  - The Activity requires permissions not available to the host
         -->
         <activity-alias
-                android:name="com.twofortyfouram.locale.example.setting.toast.ui.activity.PluginActivity"
-                android:exported="true"
-                android:icon="@drawable/ic_plugin"
-                android:label="@string/plugin_name"
-                android:targetActivity="com.twofortyfouram.locale.example.setting.toast.ui.activity.EditActivity"
-                tools:ignore="ExportedActivity">
+            android:name="com.twofortyfouram.locale.example.setting.toast.ui.activity.PluginActivity"
+            android:exported="true"
+            android:icon="@drawable/ic_plugin"
+            android:label="@string/plugin_name"
+            android:targetActivity="com.twofortyfouram.locale.example.setting.toast.ui.activity.EditActivity"
+            tools:ignore="ExportedActivity">
             <!-- this Intent filter allows the plug-in to be discovered by the host. -->
             <intent-filter>
-                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING"/>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
             </intent-filter>
         </activity-alias>
 
@@ -75,13 +91,13 @@
              open the app directly from the app store.
         -->
         <activity
-                android:name="com.twofortyfouram.locale.sdk.client.ui.activity.InfoActivity"
-                android:exported="true"
-                tools:ignore="ExportedActivity">
+            android:name="com.twofortyfouram.locale.sdk.client.ui.activity.InfoActivity"
+            android:exported="true"
+            tools:ignore="ExportedActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.INFO"/>
+                <category android:name="android.intent.category.INFO" />
             </intent-filter>
         </activity>
 
@@ -94,14 +110,14 @@
                 - There are multiple BroadcastReceivers for com.twofortyfouram.locale.intent.action.FIRE_SETTING
         -->
         <receiver
-                android:name="com.twofortyfouram.locale.example.setting.toast.receiver.FireReceiver"
-                android:exported="true"
-                android:process=":background"
-                tools:ignore="ExportedReceiver">
+            android:name="com.twofortyfouram.locale.example.setting.toast.receiver.FireReceiver"
+            android:exported="true"
+            android:process=":background"
+            tools:ignore="ExportedReceiver">
 
             <!-- this Intent filter allows the plug-in to discovered by the host. -->
             <intent-filter>
-                <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING"/>
+                <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
             </intent-filter>
         </receiver>
     </application>

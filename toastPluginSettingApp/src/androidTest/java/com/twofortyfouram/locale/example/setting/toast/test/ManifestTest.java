@@ -1,46 +1,57 @@
 /*
- * android-toast-setting-plugin-for-locale <https://github.com/twofortyfouram/android-toast-setting-plugin-for-locale>
- * Copyright 2014 two forty four a.m. LLC
+ * android-toast-setting-plugin-for-locale https://github.com/twofortyfouram/android-toast-setting-plugin-for-locale
+ * Copyright (C) 2009–2018 two forty four a.m. LLC
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+ * this file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *  http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the
- * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software distributed
+ * under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
  */
 
 package com.twofortyfouram.locale.example.setting.toast.test;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
-import android.support.annotation.NonNull;
-import android.test.AndroidTestCase;
-import android.test.suitebuilder.annotation.SmallTest;
+import androidx.annotation.NonNull;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.filters.SmallTest;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertTrue;
+
+import com.twofortyfouram.locale.api.LocalePluginIntent;
+
 /**
  * Tests to verify proper entries in the plug-in's Android Manifest.
  */
-public final class ManifestTest extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+public final class ManifestTest {
 
     @SmallTest
-    public void testApplicationEnabled() {
-        assertTrue(getContext().getApplicationInfo().enabled);
+    @Test
+    public void applicationEnabled() {
+        assertThat(ApplicationProvider.getApplicationContext().getApplicationInfo().enabled, is(true));
     }
 
     @SmallTest
-    public void testPluginActivityPresent() {
-        final List<ResolveInfo> activities = getPluginActivities(getContext());
-        assertFalse(activities.isEmpty());
+    @Test
+    public void pluginActivityPresent() {
+        final List<ResolveInfo> activities = getPluginActivities(ApplicationProvider.getApplicationContext());
+        assertThat(activities, not(empty()));
 
         for (final ResolveInfo x : activities) {
             assertTrue(x.activityInfo.enabled);
@@ -49,25 +60,26 @@ public final class ManifestTest extends AndroidTestCase {
             /*
              * Verify that the plug-in doesn't request permissions not available to the host
              */
-            assertNull(x.activityInfo.permission);
+            assertThat(x.activityInfo.permission, nullValue());
 
             /*
              * Verify that the plug-in has a label attribute in the AndroidManifest
              */
-            assertFalse(0 == x.activityInfo.labelRes);
+            assertThat(x.activityInfo.labelRes, not(0));
 
             /*
              * Verify that the plug-in has a icon attribute in the AndroidManifest
              */
-            assertFalse(0 == x.activityInfo.icon);
+            assertThat(x.activityInfo.icon, not(0));
         }
     }
 
     @SmallTest
-    public void testPluginReceiver() {
-        final List<ResolveInfo> receivers = getPluginReceivers(getContext());
+    @Test
+    public void pluginReceiver() {
+        final List<ResolveInfo> receivers = getPluginReceivers(ApplicationProvider.getApplicationContext());
 
-        assertEquals(1, receivers.size());
+        assertThat(receivers, hasSize(1));
 
         for (final ResolveInfo x : receivers) {
             assertTrue(x.activityInfo.enabled);
@@ -76,38 +88,25 @@ public final class ManifestTest extends AndroidTestCase {
             /*
              * Verify that the plug-in doesn't request permissions not available to the host
              */
-            assertNull(x.activityInfo.permission);
+            assertThat(x.activityInfo.permission, nullValue());
         }
     }
 
     /**
-     * Verifies the package is configured to be installed to internal memory
-     */
-    @SmallTest
-    public void testManifestInstallLocation() throws Exception {
-        /*
-         * Note that in addition to this test, Locale will also check that a plug-in is actually on
-         * internal memory at runtime. This primarily affects custom ROMs that permit moving apps to
-         * external memory even if the app specifies internalOnly.
-         */
-        assertEquals(InstallLocation.internalOnly, InstallLocation.getManifestInstallLocation(
-                getContext(), getContext().getPackageName()));
-    }
-
-    /**
      * Gets a list of all Activities in {@code context}'s package that export
-     * {@link com.twofortyfouram.locale.api.Intent#ACTION_EDIT_SETTING}.
+     * {@link LocalePluginIntent#ACTION_EDIT_SETTING}.
      *
      * @param context Application context.
      */
+    @NonNull
     private static List<ResolveInfo> getPluginActivities(@NonNull final Context context) {
 
         final String packageName = context.getPackageName();
 
-        final List<ResolveInfo> result = new LinkedList<ResolveInfo>();
+        final List<ResolveInfo> result = new LinkedList<>();
 
         for (final ResolveInfo x : context.getPackageManager().queryIntentActivities(
-                new Intent(com.twofortyfouram.locale.api.Intent.ACTION_EDIT_SETTING),
+                new Intent(LocalePluginIntent.ACTION_EDIT_SETTING),
                 0)) {
             if (packageName.equals(x.activityInfo.packageName)) {
                 result.add(x);
@@ -119,17 +118,18 @@ public final class ManifestTest extends AndroidTestCase {
 
     /**
      * Gets a list of all BroadcastReceivers in {@code context}'s package that export
-     * {@link com.twofortyfouram.locale.api.Intent#ACTION_FIRE_SETTING ACTION_FIRE_SETTING}.
+     * {@link LocalePluginIntent#ACTION_FIRE_SETTING ACTION_FIRE_SETTING}.
      *
      * @param context Application context.
      */
+    @NonNull
     private static List<ResolveInfo> getPluginReceivers(@NonNull final Context context) {
         final String packageName = context.getPackageName();
 
-        final List<ResolveInfo> result = new LinkedList<ResolveInfo>();
+        final List<ResolveInfo> result = new LinkedList<>();
 
         for (final ResolveInfo x : context.getPackageManager().queryBroadcastReceivers(
-                new Intent(com.twofortyfouram.locale.api.Intent.ACTION_FIRE_SETTING),
+                new Intent(LocalePluginIntent.ACTION_FIRE_SETTING),
                 0)) {
             if (packageName.equals(x.activityInfo.packageName)) {
                 result.add(x);
