@@ -1,6 +1,0 @@
-# This improves obfuscation and moves non-public classes to their own namespace.
--repackageclasses 'com.twofortyfouram.locale.example.setting.toast'
-
-# Ensure that stacktraces are reversible.
--renamesourcefileattribute SourceFile
--keepattributes SourceFile,LineNumberTable

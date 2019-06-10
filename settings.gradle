@@ -1,1 +1,1 @@
-include ':toastPluginSettingApp'
+include ':HomeAssistantTaskerPlugin'

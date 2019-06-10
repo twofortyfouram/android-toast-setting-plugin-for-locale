@@ -1,0 +1,6 @@
+# This improves obfuscation and moves non-public classes to their own namespace.
+-repackageclasses 'com.markadamson.taskerplugin.homeassistant'
+
+# Ensure that stacktraces are reversible.
+-renamesourcefileattribute SourceFile
+-keepattributes SourceFile,LineNumberTable
