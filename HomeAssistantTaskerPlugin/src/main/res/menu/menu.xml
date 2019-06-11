@@ -5,8 +5,9 @@
     >
 
     <item
-        android:id="@+id/menu_discard_changes"
-        app:showAsAction="never"
-        android:title="@string/menu_discard_changes"/>
+        android:id="@+id/menu_save_changes"
+        android:icon="@drawable/baseline_save_white_36"
+        app:showAsAction="always"
+        android:title="@string/menu_save_changes"/>
 
 </menu>

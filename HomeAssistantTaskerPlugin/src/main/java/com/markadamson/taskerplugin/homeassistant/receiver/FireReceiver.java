@@ -16,6 +16,8 @@
 package com.markadamson.taskerplugin.homeassistant.receiver;
 
 import com.markadamson.taskerplugin.homeassistant.bundle.PluginBundleValues;
+import com.markadamson.taskerplugin.homeassistant.model.HAAPI;
+import com.markadamson.taskerplugin.homeassistant.model.HAServerStore;
 import com.twofortyfouram.locale.sdk.client.receiver.AbstractPluginSettingReceiver;
 
 import android.content.Context;
@@ -32,11 +34,15 @@ public final class FireReceiver extends AbstractPluginSettingReceiver {
 
     @Override
     protected boolean isAsync() {
-        return false;
+        return true;
     }
 
     @Override
     protected void firePluginSetting(@NonNull final Context context, @NonNull final Bundle bundle) {
-        Toast.makeText(context, PluginBundleValues.getMessage(bundle), Toast.LENGTH_LONG).show();
+//        Toast.makeText(context, PluginBundleValues.getService(bundle), Toast.LENGTH_LONG).show();
+
+        String[] service = PluginBundleValues.getService(bundle).split("\\.");
+        new HAAPI(HAServerStore.getInstance().getServers().get(PluginBundleValues.getServer(bundle)))
+                .callService(service[0], service[1], PluginBundleValues.getData(bundle));
     }
 }

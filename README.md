@@ -1,21 +1,23 @@
-[![CircleCI](https://circleci.com/gh/twofortyfouram/android-toast-setting-plugin-for-locale.svg?style=svg)](https://circleci.com/gh/twofortyfouram/android-toast-setting-plugin-for-locale)
+# Home Assistant Plug-In for Tasker
+This is a Tasker plug-in to allow calling services on a Home Assistant installation.
 
-# Overview
-[Locale](https://play.google.com/store/apps/details?id=com.twofortyfouram.locale) allows developers to create plug-in conditions and settings.  The android-toast-setting-plugin-for-locale implements an example plug-in setting.  This project is the final layer of the [Locale Developer Platform](http://www.twofortyfouram.com/developer).
+## Requirements
+- Android 4.0 (API 14)
+- [Tasker](https://tasker.joaoapps.com/)
+- [Home Assistant 0.78](https://www.home-assistant.io/)
 
-Although there are multiple ways to approach building a plug-in setting, we recommend forking this project as the starting point.
+## Usage
+- Generate a [Long-Lived Access Token](https://www.home-assistant.io/docs/authentication/) in Home Assistant.
+- Create a new Task in Tasker.
+- Add the Action 'Plugin' > 'Home Assistant Plug-In for Tasker' to the Task.
+- Tap the edit button by 'Configuration'.
+- Tap the '+' button near the top right to add a new Home Assistant server.
+- Enter the details for your Home Assistant server. The Base URL must include the protocol, and **not** a trailing backslash (eg: `https://my.home-assistant.com`).
+- Test the server, then click 'Save'.
+- Select a Service, and optionally enter Service Data in JSON format.
+- Test the Service call, then click 'Save'.
 
-
-# Compatibility
-The application is compatible and optimized for Android API Level 14 and above.
-
-
-## Forking this Project
-The following steps are necessary to fork this project
-
-1. Rename the package name in AndroidManifest.xml
-1. Rename the package name in proguard-project.txt
-1. Optional: For CircleCI continous integration (CI)
-    1. Create a [Firebase](https://firebase.google.com) project
-    1. Configure the Firebase project with a [service account](https://firebase.google.com/docs/test-lab/continuous)
-    1. On CircleCI, add environment variables for `GCLOUD_SERVICE_KEY_BASE_64` which is the base64 encoded JSON service key, `GCLOUD_PROJECT_ID` which is the project ID, and `GCLOUD_DEFAULT_BUCKET` which is the default free bucket included with Firebase Test Lab.
+## To Do
+- [x] Actions
+- [ ] Conditions
+- [ ] Tasker Variables

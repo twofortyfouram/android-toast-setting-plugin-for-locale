@@ -28,10 +28,16 @@ import android.app.Application;
  */
 public final class PluginApplication extends Application {
 
+    private static PluginApplication instance;
+
+    public static PluginApplication get() {
+        return instance;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
-
+        instance = this;
         Lumberjack.init(getApplicationContext());
     }
 }

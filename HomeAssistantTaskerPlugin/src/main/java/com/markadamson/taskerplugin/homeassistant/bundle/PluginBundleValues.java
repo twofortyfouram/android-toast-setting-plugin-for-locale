@@ -26,6 +26,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.UUID;
+
 import static com.twofortyfouram.assertion.Assertions.assertNotEmpty;
 import static com.twofortyfouram.assertion.Assertions.assertNotNull;
 
@@ -39,11 +41,29 @@ public final class PluginBundleValues {
     /**
      * Type: {@code String}.
      * <p>
-     * String message to display in a Toast message.
+     * Server UUID as string.
      */
     @NonNull
-    public static final String BUNDLE_EXTRA_STRING_MESSAGE
-            = "com.markadamson.taskerplugin.homeassistant.extra.STRING_MESSAGE"; //$NON-NLS-1$
+    public static final String BUNDLE_EXTRA_STRING_SERVER
+            = "com.markadamson.taskerplugin.homeassistant.extra.STRING_SERVER"; //$NON-NLS-1$
+
+    /**
+     * Type: {@code String}.
+     * <p>
+     * Domain/service to call.
+     */
+    @NonNull
+    public static final String BUNDLE_EXTRA_STRING_SERVICE
+            = "com.markadamson.taskerplugin.homeassistant.extra.STRING_SERVICE"; //$NON-NLS-1$
+
+    /**
+     * Type: {@code String}.
+     * <p>
+     * Service data (JSON, optional).
+     */
+    @NonNull
+    public static final String BUNDLE_EXTRA_STRING_DATA
+            = "com.markadamson.taskerplugin.homeassistant.extra.STRING_DATA"; //$NON-NLS-1$
 
     /**
      * Type: {@code int}.
@@ -73,9 +93,11 @@ public final class PluginBundleValues {
         }
 
         try {
-            BundleAssertions.assertHasString(bundle, BUNDLE_EXTRA_STRING_MESSAGE, false, false);
+            BundleAssertions.assertHasString(bundle, BUNDLE_EXTRA_STRING_SERVER, false, false);
+            BundleAssertions.assertHasString(bundle, BUNDLE_EXTRA_STRING_SERVICE, false, false);
+            BundleAssertions.assertHasString(bundle, BUNDLE_EXTRA_STRING_DATA, false, true);
             BundleAssertions.assertHasInt(bundle, BUNDLE_EXTRA_INT_VERSION_CODE);
-            BundleAssertions.assertKeyCount(bundle, 2);
+            BundleAssertions.assertKeyCount(bundle, 4);
         } catch (final AssertionError e) {
             Lumberjack.e("Bundle failed verification%s", e); //$NON-NLS-1$
             return false;
@@ -86,18 +108,25 @@ public final class PluginBundleValues {
 
     /**
      * @param context Application context.
-     * @param message The toast message to be displayed by the plug-in.
+     * @param server The server UUID.
+     * @param service The domain/service to call.
+     * @param data The service data to send.
      * @return A plug-in bundle.
      */
     @NonNull
     public static Bundle generateBundle(@NonNull final Context context,
-            @NonNull final String message) {
+                                        @NonNull final UUID server,
+                                        @NonNull final String service,
+                                        @NonNull final String data) {
         assertNotNull(context, "context"); //$NON-NLS-1$
-        assertNotEmpty(message, "message"); //$NON-NLS-1$
+        assertNotNull(server, "server"); //$NON-NLS-1$
+        assertNotEmpty(service, "service"); //$NON-NLS-1$
 
         final Bundle result = new Bundle();
         result.putInt(BUNDLE_EXTRA_INT_VERSION_CODE, AppBuildInfo.getVersionCode(context));
-        result.putString(BUNDLE_EXTRA_STRING_MESSAGE, message);
+        result.putString(BUNDLE_EXTRA_STRING_SERVER, server.toString());
+        result.putString(BUNDLE_EXTRA_STRING_SERVICE, service);
+        result.putString(BUNDLE_EXTRA_STRING_DATA, data);
 
         return result;
     }
@@ -107,8 +136,18 @@ public final class PluginBundleValues {
      * @return The message inside the plug-in bundle.
      */
     @NonNull
-    public static String getMessage(@NonNull final Bundle bundle) {
-        return bundle.getString(BUNDLE_EXTRA_STRING_MESSAGE);
+    public static UUID getServer(@NonNull final Bundle bundle) {
+        return UUID.fromString(bundle.getString(BUNDLE_EXTRA_STRING_SERVER));
+    }
+
+    @NonNull
+    public static String getService(@NonNull final Bundle bundle) {
+        return bundle.getString(BUNDLE_EXTRA_STRING_SERVICE);
+    }
+
+    @NonNull
+    public static String getData(@NonNull final Bundle bundle) {
+        return bundle.getString(BUNDLE_EXTRA_STRING_DATA);
     }
 
     /**

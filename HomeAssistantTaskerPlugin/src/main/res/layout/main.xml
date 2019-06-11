@@ -12,18 +12,85 @@
 ** See the License for the specific language governing permissions and
 ** limitations under the License.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="match_parent">
 
-    <EditText
-        android:id="@android:id/text1"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="6dip"
-        android:layout_marginRight="6dip"
-        android:layout_marginTop="8dip"
-        android:hint="@string/message_hint" />
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
-</LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dip"
+            android:layout_marginRight="6dip"
+            android:layout_marginTop="8dip"
+            android:gravity="center_vertical">
+
+            <Spinner
+                android:id="@+id/spn_server"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"/>
+
+            <ImageButton
+                android:id="@+id/btn_add_server"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dip"
+                android:layout_marginStart="2dip"
+                android:contentDescription="@string/add_a_server"
+                android:src="@drawable/baseline_add_black_18" />
+
+            <ImageButton
+                android:id="@+id/btn_edit_server"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dip"
+                android:layout_marginStart="2dip"
+                android:contentDescription="@string/edit_server"
+                android:src="@drawable/baseline_edit_black_18" />
+
+            <ImageButton
+                android:id="@+id/btn_delete_server"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dip"
+                android:layout_marginStart="2dip"
+                android:contentDescription="@string/delete_server"
+                android:src="@drawable/baseline_delete_black_18" />
+
+        </LinearLayout>
+
+        <Spinner
+            android:id="@+id/spn_service"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dip"
+            android:layout_marginRight="6dip"
+            android:layout_marginTop="8dip"/>
+
+        <EditText
+            android:id="@+id/et_service_data"
+            android:hint="@string/service_data_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dip"
+            android:layout_marginRight="6dip"
+            android:layout_marginTop="8dip" />
+
+        <Button
+            android:id="@+id/btn_test_service"
+            android:text="@string/test_service"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dip"
+            android:layout_marginRight="6dip"
+            android:layout_marginTop="8dip"
+            android:layout_gravity="end"/>
+
+    </LinearLayout>
+</ScrollView>
