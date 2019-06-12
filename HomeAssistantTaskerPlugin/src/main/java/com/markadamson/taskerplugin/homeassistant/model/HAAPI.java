@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -85,6 +86,8 @@ public class HAAPI {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        Collections.sort(result);
 
         return result;
     }

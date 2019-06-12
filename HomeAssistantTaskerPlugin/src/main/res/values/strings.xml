@@ -11,7 +11,7 @@
     <string name="message_hint">Scheduled Toast</string>
 
     <!-- Discard menu item -->
-    <string name="menu_save_changes">Save Changes</string>
+    <string name="menu_cancel">Cancel</string>
     <string name="add_a_server">Add a Server</string>
     <string name="delete_server">Delete Server</string>
 

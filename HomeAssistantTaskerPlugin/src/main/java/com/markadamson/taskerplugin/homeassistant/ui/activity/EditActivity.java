@@ -334,29 +334,45 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
         return true;
     }
 
+    private boolean canSave() {
+        boolean result = false;
+
+        if (mServers.isEmpty())
+            Toast.makeText(this, "Please select a Server", Toast.LENGTH_SHORT).show();
+        else if (mServices.isEmpty())
+            Toast.makeText(this, "Please select a Service", Toast.LENGTH_SHORT).show();
+        else {
+            result = true;
+
+            if (!etServiceData.getText().toString().isEmpty())
+                try {
+                    new JSONObject(etServiceData.getText().toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Invalid Service Data JSON", Toast.LENGTH_SHORT).show();
+                    result = false;
+                }
+        }
+
+        return result;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (canSave())
+            super.onBackPressed();
+    }
+
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         if (android.R.id.home == item.getItemId()) {
-            // Signal to AbstractAppCompatPluginActivity that the user canceled.
-            mIsCancelled = true;
-            finish();
-        }
-        else if (R.id.menu_save_changes == item.getItemId()) {
-            if (mServers.isEmpty())
-                Toast.makeText(this, "Please select a Server", Toast.LENGTH_SHORT).show();
-            else if (mServices.isEmpty())
-                Toast.makeText(this, "Please select a Service", Toast.LENGTH_SHORT).show();
-            else {
-                if (!etServiceData.getText().toString().isEmpty())
-                    try {
-                        JSONObject jsonData = new JSONObject(etServiceData.getText().toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        Toast.makeText(this, "Invalid Service Data JSON", Toast.LENGTH_SHORT).show();
-                        return true;
-                    }
+            if (canSave())
                 finish();
-            }
+        }
+        else if (R.id.menu_cancel == item.getItemId()) {
+            mIsCancelled = true;
+
+            finish();
 
             return true;
         }

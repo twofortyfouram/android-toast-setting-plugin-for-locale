@@ -116,16 +116,26 @@ public class EditServerActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        setResult(Activity.RESULT_OK,
+                new Intent()
+                        .putExtra(EXT_SERVER_NAME, etServerName.getText().toString())
+                        .putExtra(EXT_BASE_URL, etBaseURL.getText().toString())
+                        .putExtra(EXT_ACCESS_TOKEN, etAccessToken.getText().toString()));
+        super.onBackPressed();
+    }
+
+    @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         if (android.R.id.home == item.getItemId()) {
-            finish();
-        }
-        else if (R.id.menu_save_changes == item.getItemId()) {
             setResult(Activity.RESULT_OK,
                     new Intent()
                             .putExtra(EXT_SERVER_NAME, etServerName.getText().toString())
                             .putExtra(EXT_BASE_URL, etBaseURL.getText().toString())
                             .putExtra(EXT_ACCESS_TOKEN, etAccessToken.getText().toString()));
+            finish();
+        }
+        else if (R.id.menu_cancel == item.getItemId()) {
             finish();
 
             return true;
