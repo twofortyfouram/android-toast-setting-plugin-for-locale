@@ -121,4 +121,64 @@ public class HAAPI {
             e.printStackTrace();
         }
     }
+
+    public List<String> getEntities() {
+        List<String> result = new ArrayList<>();
+
+        try {
+            URL url = new URL(mServer.getBaseURL() + "/api/states");
+            HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
+            httpConn.setRequestMethod("GET");
+            httpConn.setRequestProperty("Authorization", "Bearer " + mServer.getAccessToken());
+
+            InputStream inputStream = httpConn.getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String line = bufferedReader.readLine();
+
+            JSONArray apiResults = new JSONArray(line);
+            for (int e = 0; e < apiResults.length(); e++)
+                result.add(apiResults.getJSONObject(e).getString("entity_id"));
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        Collections.sort(result);
+
+        return result;
+    }
+
+    public String getState(String entityId) {
+        String result;
+
+        try {
+            URL url = new URL(mServer.getBaseURL() + "/api/states/" + entityId);
+            HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
+            httpConn.setRequestMethod("GET");
+            httpConn.setRequestProperty("Authorization", "Bearer " + mServer.getAccessToken());
+
+            InputStream inputStream = httpConn.getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String line = bufferedReader.readLine();
+
+            result = new JSONObject(line).getString("state");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            result = e.getMessage();
+        } catch (IOException e) {
+            e.printStackTrace();
+            result = e.getMessage();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            result = e.getMessage();
+        }
+
+        return result;
+    }
 }

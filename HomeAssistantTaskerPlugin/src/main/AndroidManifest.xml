@@ -43,7 +43,17 @@
         <activity
             android:name="com.markadamson.taskerplugin.homeassistant.ui.activity.EditActivity"
             android:exported="false"
-            android:label="@string/plugin_name"
+            android:label="@string/call_service"
+            android:theme="@style/Theme.AppCompat"
+            android:uiOptions="splitActionBarWhenNarrow"
+            android:windowSoftInputMode="adjustResize"
+            tools:ignore="UnusedAttribute">
+        </activity>
+
+        <activity
+            android:name="com.markadamson.taskerplugin.homeassistant.ui.activity.EditGetStateActivity"
+            android:exported="false"
+            android:label="@string/get_state"
             android:theme="@style/Theme.AppCompat"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="adjustResize"
@@ -53,7 +63,7 @@
         <activity
             android:name="com.markadamson.taskerplugin.homeassistant.ui.activity.EditServerActivity"
             android:exported="false"
-            android:label="@string/plugin_name"
+            android:label="@string/edit_server"
             android:theme="@style/Theme.AppCompat"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="adjustResize"
@@ -69,12 +79,24 @@
                  - The Activity requires permissions not available to the host
         -->
         <activity-alias
-                android:name="com.markadamson.taskerplugin.homeassistant.ui.activity.PluginActivity"
-                android:exported="true"
-                android:icon="@drawable/ic_plugin"
-                android:label="@string/plugin_name"
-                android:targetActivity="com.markadamson.taskerplugin.homeassistant.ui.activity.EditActivity"
-                tools:ignore="ExportedActivity">
+            android:name="com.markadamson.taskerplugin.homeassistant.ui.activity.PluginActivity"
+            android:exported="true"
+            android:icon="@drawable/ic_plugin"
+            android:label="@string/call_service"
+            android:targetActivity="com.markadamson.taskerplugin.homeassistant.ui.activity.EditActivity"
+            tools:ignore="ExportedActivity">
+            <!-- this Intent filter allows the plug-in to be discovered by the host. -->
+            <intent-filter>
+                <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING"/>
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name="com.markadamson.taskerplugin.homeassistant.ui.activity.GetStatePluginActivity"
+            android:exported="true"
+            android:icon="@drawable/ic_plugin"
+            android:label="@string/get_state"
+            android:targetActivity="com.markadamson.taskerplugin.homeassistant.ui.activity.EditGetStateActivity"
+            tools:ignore="ExportedActivity">
             <!-- this Intent filter allows the plug-in to be discovered by the host. -->
             <intent-filter>
                 <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING"/>

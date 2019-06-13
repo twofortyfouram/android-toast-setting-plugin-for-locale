@@ -28,7 +28,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.markadamson.taskerplugin.homeassistant.R;
-import com.markadamson.taskerplugin.homeassistant.bundle.PluginBundleValues;
+import com.markadamson.taskerplugin.homeassistant.bundle.GetStatePluginBundleValues;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPITask;
 import com.markadamson.taskerplugin.homeassistant.model.HAServer;
 import com.markadamson.taskerplugin.homeassistant.ui.ServerSelectionUI;
@@ -46,61 +46,68 @@ import java.util.List;
 import java.util.UUID;
 
 @NotThreadSafe
-public final class EditActivity extends AbstractAppCompatPluginActivity {
+public final class EditGetStateActivity extends AbstractAppCompatPluginActivity {
     private ServerSelectionUI mServerUI;
 
-    private List<String> mServices;
-    private ArrayAdapter<String> mServiceAdapter;
-    private Spinner spnServices;
-    private EditText etServiceData;
+    private List<String> mEntities;
+    private ArrayAdapter<String> mEntityAdapter;
+    private Spinner spnEntities;
+    private EditText etVariable;
 
-    private String mService/*, mServiceData*/;
+    private String mEntity;
 
     private abstract static class MyAPITask<Params,Progress,Result> extends HAAPITask<Params,Progress,Result> {
-        WeakReference<EditActivity> activityReference;
+        WeakReference<EditGetStateActivity> activityReference;
 
-        MyAPITask(EditActivity context, HAServer server) {
+        MyAPITask(EditGetStateActivity context, HAServer server) {
             super(server);
             activityReference = new WeakReference<>(context);
         }
     }
 
-    private static class GetServicesTask extends MyAPITask<Void,Void,List<String>> {
-        GetServicesTask(EditActivity context, HAServer server) {
+    private static class GetEntitiesTask extends MyAPITask<Void,Void,List<String>> {
+        GetEntitiesTask(EditGetStateActivity context, HAServer server) {
             super(context, server);
-            context.mServices.clear();
-            context.mServiceAdapter.notifyDataSetChanged();
+            context.mEntities.clear();
+            context.mEntityAdapter.notifyDataSetChanged();
         }
 
         @Override
         protected List<String> doInBackground(Void... voids) {
-            return mAPI.getServices();
+            return mAPI.getEntities();
         }
 
         @Override
-        protected void onPostExecute(List<String> services) {
-            EditActivity activity = activityReference.get();
+        protected void onPostExecute(List<String> entities) {
+            EditGetStateActivity activity = activityReference.get();
             if (activity == null || activity.isFinishing()) return;
 
-            activity.mServices.clear();
-            activity.mServices.addAll(services);
-            activity.mServiceAdapter.notifyDataSetChanged();
+            activity.mEntities.clear();
+            activity.mEntities.addAll(entities);
+            activity.mEntityAdapter.notifyDataSetChanged();
 
-            if (activity.mServices.contains(activity.mService))
-                activity.spnServices.setSelection(activity.mServices.indexOf(activity.mService));
+            if (activity.mEntities.contains(activity.mEntity))
+                activity.spnEntities.setSelection(activity.mEntities.indexOf(activity.mEntity));
         }
     }
 
-    private static class TestServiceTask extends MyAPITask<String,Void,Void> {
+    private static class TestEntityTask extends MyAPITask<String,Void,String> {
 
-        TestServiceTask(EditActivity context, HAServer server) {
+        TestEntityTask(EditGetStateActivity context, HAServer server) {
             super(context, server);
         }
 
         @Override
-        protected Void doInBackground(String... strings) {
-            mAPI.callService(strings[0], strings[1], strings[2]);
-            return null;
+        protected String doInBackground(String... strings) {
+            return mAPI.getState(strings[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String state) {
+            EditGetStateActivity activity = activityReference.get();
+            if (activity == null || activity.isFinishing()) return;
+
+            Toast.makeText(activity, state, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -108,7 +115,7 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.main);
+        setContentView(R.layout.edit_get_state);
 
         /*
          * To help the user keep context, the title shows the host's name and the subtitle
@@ -134,31 +141,30 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
         mServerUI = new ServerSelectionUI(this, new ServerSelectionUI.OnServerSelectedListener() {
             @Override
             public void onServerSelected(HAServer server) {
-                new GetServicesTask(EditActivity.this, server).execute();
+                new GetEntitiesTask(EditGetStateActivity.this, server).execute();
             }
 
             @Override
             public void onNothingSelected() {
-                mServices.clear();
-                mServiceAdapter.notifyDataSetChanged();
+                mEntities.clear();
+                mEntityAdapter.notifyDataSetChanged();
             }
         });
 
-        mServices = new ArrayList<>();
-        mServiceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, mServices);
+        mEntities = new ArrayList<>();
+        mEntityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, mEntities);
 
-        spnServices = (Spinner) findViewById(R.id.spn_service);
-        spnServices.setAdapter(mServiceAdapter);
+        spnEntities = (Spinner) findViewById(R.id.spn_entity);
+        spnEntities.setAdapter(mEntityAdapter);
 
-        etServiceData = (EditText) findViewById(R.id.et_service_data);
+        etVariable = (EditText) findViewById(R.id.et_variable);
 
-        findViewById(R.id.btn_test_service).setOnClickListener(
+        findViewById(R.id.btn_test_entity).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String[] service = mServices.get(spnServices.getSelectedItemPosition()).split("\\.");
-                        new TestServiceTask(EditActivity.this, mServerUI.currentServer())
-                                .execute(service[0], service[1], etServiceData.getText().toString());
+                        new TestEntityTask(EditGetStateActivity.this, mServerUI.currentServer())
+                                .execute(mEntities.get(spnEntities.getSelectedItemPosition()));
                     }
                 }
         );
@@ -174,8 +180,8 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
     protected void onSaveInstanceState(Bundle outState) {
         if (mServerUI.serverCount() > 0) {
             outState.putString("server", mServerUI.currentId().toString());
-            outState.putString("service", mServices.get(spnServices.getSelectedItemPosition()));
-            outState.putString("data", etServiceData.getText().toString());
+            outState.putString("entity", mEntities.get(spnEntities.getSelectedItemPosition()));
+            outState.putString("variable", etVariable.getText().toString());
         }
         super.onSaveInstanceState(outState);
     }
@@ -186,45 +192,45 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
         if (savedInstanceState.containsKey("server"))
             restoreState(
                     UUID.fromString(savedInstanceState.getString("server")),
-                    savedInstanceState.getString("service"),
-                    savedInstanceState.getString("data")
+                    savedInstanceState.getString("entity"),
+                    savedInstanceState.getString("variable")
             );
     }
 
     private void restoreState(UUID id, String service, String data) {
-        mService = service;
+        mEntity = service;
 
         mServerUI.setSelection(id);
-        etServiceData.setText(data);
+        etVariable.setText(data);
     }
 
     @Override
     public void onPostCreateWithPreviousResult(@NonNull final Bundle previousBundle,
-            @NonNull final String previousBlurb) {
+                                               @NonNull final String previousBlurb) {
         restoreState(
-                PluginBundleValues.getServer(previousBundle),
-                PluginBundleValues.getService(previousBundle),
-                PluginBundleValues.getData(previousBundle)
+                GetStatePluginBundleValues.getServer(previousBundle),
+                GetStatePluginBundleValues.getEntity(previousBundle),
+                GetStatePluginBundleValues.getVariable(previousBundle)
         );
     }
 
     @Override
     public boolean isBundleValid(@NonNull final Bundle bundle) {
-        return PluginBundleValues.isBundleValid(bundle);
+        return GetStatePluginBundleValues.isBundleValid(bundle);
     }
 
     @Override
     public Bundle getResultBundle() {
-        return PluginBundleValues.generateBundle(getApplicationContext(),
+        return GetStatePluginBundleValues.generateBundle(getApplicationContext(),
                 mServerUI.currentId(),
-                mServices.get(spnServices.getSelectedItemPosition()),
-                etServiceData.getText().toString());
+                mEntities.get(spnEntities.getSelectedItemPosition()),
+                etVariable.getText().toString());
     }
 
     @NonNull
     @Override
     public String getResultBlurb(@NonNull final Bundle bundle) {
-        final String message = PluginBundleValues.getService(bundle);
+        final String message = GetStatePluginBundleValues.getEntity(bundle);
 
         final int maxBlurbLength = getResources().getInteger(
                 R.integer.com_twofortyfouram_locale_sdk_client_maximum_blurb_length);
@@ -248,19 +254,19 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
 
         if (mServerUI.serverCount() == 0)
             Toast.makeText(this, "Please select a Server", Toast.LENGTH_SHORT).show();
-        else if (mServices.isEmpty())
-            Toast.makeText(this, "Please select a Service", Toast.LENGTH_SHORT).show();
+        else if (mEntities.isEmpty())
+            Toast.makeText(this, "Please select an Entity", Toast.LENGTH_SHORT).show();
         else {
             result = true;
 
-            if (!etServiceData.getText().toString().isEmpty())
-                try {
-                    new JSONObject(etServiceData.getText().toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Toast.makeText(this, "Invalid Service Data JSON", Toast.LENGTH_SHORT).show();
-                    result = false;
-                }
+//            if (!etVariable.getText().toString().isEmpty())
+//                try {
+//                    new JSONObject(etVariable.getText().toString());
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                    Toast.makeText(this, "Invalid Service Data JSON", Toast.LENGTH_SHORT).show();
+//                    result = false;
+//                }
         }
 
         return result;

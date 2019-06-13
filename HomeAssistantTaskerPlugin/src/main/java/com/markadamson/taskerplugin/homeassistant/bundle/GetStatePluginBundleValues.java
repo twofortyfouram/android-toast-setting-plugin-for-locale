@@ -37,7 +37,7 @@ import static com.twofortyfouram.assertion.Assertions.assertNotNull;
  * plug-in.
  */
 @ThreadSafe
-public final class PluginBundleValues {
+public final class GetStatePluginBundleValues {
 
     /**
      * Type: {@code String}.
@@ -54,8 +54,8 @@ public final class PluginBundleValues {
      * Domain/service to call.
      */
     @NonNull
-    public static final String BUNDLE_EXTRA_STRING_SERVICE
-            = "com.markadamson.taskerplugin.homeassistant.extra.STRING_SERVICE"; //$NON-NLS-1$
+    public static final String BUNDLE_EXTRA_STRING_ENTITY
+            = "com.markadamson.taskerplugin.homeassistant.extra.STRING_ENTITY"; //$NON-NLS-1$
 
     /**
      * Type: {@code String}.
@@ -63,8 +63,8 @@ public final class PluginBundleValues {
      * Service data (JSON, optional).
      */
     @NonNull
-    public static final String BUNDLE_EXTRA_STRING_DATA
-            = "com.markadamson.taskerplugin.homeassistant.extra.STRING_DATA"; //$NON-NLS-1$
+    public static final String BUNDLE_EXTRA_STRING_VARIABLE
+            = "com.markadamson.taskerplugin.homeassistant.extra.STRING_VARIABLE"; //$NON-NLS-1$
 
     /**
      * Type: {@code int}.
@@ -95,17 +95,12 @@ public final class PluginBundleValues {
 
         try {
             BundleAssertions.assertHasString(bundle, BUNDLE_EXTRA_STRING_SERVER, false, false);
-            BundleAssertions.assertHasString(bundle, BUNDLE_EXTRA_STRING_SERVICE, false, false);
-            BundleAssertions.assertHasString(bundle, BUNDLE_EXTRA_STRING_DATA, false, true);
+            BundleAssertions.assertHasString(bundle, BUNDLE_EXTRA_STRING_ENTITY, false, false);
+            BundleAssertions.assertHasString(bundle, BUNDLE_EXTRA_STRING_VARIABLE, false, true);
             BundleAssertions.assertHasInt(bundle, BUNDLE_EXTRA_INT_VERSION_CODE);
-
-            if (bundle.getInt(BUNDLE_EXTRA_INT_VERSION_CODE) < 3) {
-                BundleAssertions.assertKeyCount(bundle, 4);
-            } else {
-                BundleAssertions.assertHasInt(bundle, Constants.BUNDLE_EXTRA_BUNDLE_TYPE,
-                        Constants.BUNDLE_CALL_SERVICE, Constants.BUNDLE_CALL_SERVICE);
-                BundleAssertions.assertKeyCount(bundle, 5);
-            }
+            BundleAssertions.assertHasInt(bundle, Constants.BUNDLE_EXTRA_BUNDLE_TYPE,
+                    Constants.BUNDLE_GET_STATE, Constants.BUNDLE_GET_STATE);
+            BundleAssertions.assertKeyCount(bundle, 5);
         } catch (final AssertionError e) {
             Lumberjack.e("Bundle failed verification%s", e); //$NON-NLS-1$
             return false;
@@ -117,25 +112,25 @@ public final class PluginBundleValues {
     /**
      * @param context Application context.
      * @param server The server UUID.
-     * @param service The domain/service to call.
-     * @param data The service data to send.
+     * @param entity The domain/service to call.
+     * @param variable The service data to send.
      * @return A plug-in bundle.
      */
     @NonNull
     public static Bundle generateBundle(@NonNull final Context context,
                                         @NonNull final UUID server,
-                                        @NonNull final String service,
-                                        @NonNull final String data) {
+                                        @NonNull final String entity,
+                                        @NonNull final String variable) {
         assertNotNull(context, "context"); //$NON-NLS-1$
         assertNotNull(server, "server"); //$NON-NLS-1$
-        assertNotEmpty(service, "service"); //$NON-NLS-1$
+        assertNotEmpty(entity, "service"); //$NON-NLS-1$
 
         final Bundle result = new Bundle();
         result.putInt(BUNDLE_EXTRA_INT_VERSION_CODE, AppBuildInfo.getVersionCode(context));
-        result.putInt(Constants.BUNDLE_EXTRA_BUNDLE_TYPE, Constants.BUNDLE_CALL_SERVICE);
+        result.putInt(Constants.BUNDLE_EXTRA_BUNDLE_TYPE, Constants.BUNDLE_GET_STATE);
         result.putString(BUNDLE_EXTRA_STRING_SERVER, server.toString());
-        result.putString(BUNDLE_EXTRA_STRING_SERVICE, service);
-        result.putString(BUNDLE_EXTRA_STRING_DATA, data);
+        result.putString(BUNDLE_EXTRA_STRING_ENTITY, entity);
+        result.putString(BUNDLE_EXTRA_STRING_VARIABLE, variable);
 
         return result;
     }
@@ -150,13 +145,13 @@ public final class PluginBundleValues {
     }
 
     @NonNull
-    public static String getService(@NonNull final Bundle bundle) {
-        return bundle.getString(BUNDLE_EXTRA_STRING_SERVICE);
+    public static String getEntity(@NonNull final Bundle bundle) {
+        return bundle.getString(BUNDLE_EXTRA_STRING_ENTITY);
     }
 
     @NonNull
-    public static String getData(@NonNull final Bundle bundle) {
-        return bundle.getString(BUNDLE_EXTRA_STRING_DATA);
+    public static String getVariable(@NonNull final Bundle bundle) {
+        return bundle.getString(BUNDLE_EXTRA_STRING_VARIABLE);
     }
 
     /**
@@ -164,7 +159,7 @@ public final class PluginBundleValues {
      *
      * @throws UnsupportedOperationException because this class cannot be instantiated.
      */
-    private PluginBundleValues() {
+    private GetStatePluginBundleValues() {
         throw new UnsupportedOperationException("This class is non-instantiable"); //$NON-NLS-1$
     }
 }

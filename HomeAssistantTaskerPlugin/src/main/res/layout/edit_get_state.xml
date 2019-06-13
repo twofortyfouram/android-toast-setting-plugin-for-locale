@@ -30,7 +30,7 @@
             android:layout_marginTop="8dip"/>
 
         <Spinner
-            android:id="@+id/spn_service"
+            android:id="@+id/spn_entity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dip"
@@ -38,8 +38,8 @@
             android:layout_marginTop="8dip"/>
 
         <EditText
-            android:id="@+id/et_service_data"
-            android:hint="@string/service_data_hint"
+            android:id="@+id/et_variable"
+            android:hint="@string/variable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dip"
@@ -47,8 +47,8 @@
             android:layout_marginTop="8dip" />
 
         <Button
-            android:id="@+id/btn_test_service"
-            android:text="@string/test_service"
+            android:id="@+id/btn_test_entity"
+            android:text="@string/test_entity"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dip"

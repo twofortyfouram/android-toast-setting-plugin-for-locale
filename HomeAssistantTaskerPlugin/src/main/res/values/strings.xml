@@ -5,7 +5,7 @@
     <string name="app_name">Home Assistant Plug-in for Tasker</string>
 
     <!-- Name of the plug-in that appears in Locale -->
-    <string name="plugin_name">Home Assistant - Call Service</string>
+    <string name="plugin_name">Home Assistant</string>
 
     <!-- Hint text in the toast edit text -->
     <string name="message_hint">Scheduled Toast</string>
@@ -23,6 +23,10 @@
     <string name="connection_successful">Connection Successful!</string>
     <string name="connection_failed">Connection Failed :(</string>
     <string name="test_service">Test Service</string>
-    <string name="service_data_hint">Service Data (JSON, optional)...</string>
+    <string name="service_data_hint">Service Data (JSON, optional)…</string>
+    <string name="call_service">Call Service</string>
+    <string name="get_state">Get State</string>
+    <string name="variable">Variable</string>
+    <string name="test_entity">Test Entity</string>
 
 </resources>

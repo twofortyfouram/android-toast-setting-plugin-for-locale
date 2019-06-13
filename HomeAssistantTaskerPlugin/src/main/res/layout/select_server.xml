@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical">
+
+    <Spinner
+        android:id="@+id/spn_server"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"/>
+
+    <ImageButton
+        android:id="@+id/btn_add_server"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dip"
+        android:layout_marginStart="2dip"
+        android:contentDescription="@string/add_a_server"
+        android:src="@drawable/baseline_add_black_18" />
+
+    <ImageButton
+        android:id="@+id/btn_edit_server"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dip"
+        android:layout_marginStart="2dip"
+        android:contentDescription="@string/edit_server"
+        android:src="@drawable/baseline_edit_black_18" />
+
+    <ImageButton
+        android:id="@+id/btn_delete_server"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dip"
+        android:layout_marginStart="2dip"
+        android:contentDescription="@string/delete_server"
+        android:src="@drawable/baseline_delete_black_18" />
+
+</LinearLayout>
