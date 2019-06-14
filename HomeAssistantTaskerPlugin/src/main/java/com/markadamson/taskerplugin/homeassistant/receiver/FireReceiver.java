@@ -24,61 +24,9 @@ import com.markadamson.taskerplugin.homeassistant.Constants;
 import com.markadamson.taskerplugin.homeassistant.TaskerPlugin;
 import com.markadamson.taskerplugin.homeassistant.bundle.GetStatePluginBundleValues;
 import com.markadamson.taskerplugin.homeassistant.bundle.PluginBundleValues;
-import com.markadamson.taskerplugin.homeassistant.model.HAAPITask;
-import com.markadamson.taskerplugin.homeassistant.model.HAServer;
-import com.markadamson.taskerplugin.homeassistant.model.HAServerStore;
-
-import java.lang.ref.WeakReference;
+import com.markadamson.taskerplugin.homeassistant.service.ActionService;
 
 public final class FireReceiver extends AbstractPluginSettingReceiver {
-
-    private abstract static class MyAPITask<Params,Progress,Result> extends HAAPITask<Params,Progress,Result> {
-        WeakReference<Context> mContext;
-
-        MyAPITask(Context context, HAServer server) {
-            super(server);
-            mContext = new WeakReference<>(context);
-        }
-    }
-
-    private static class CallServiceTask extends MyAPITask<String,Void,Void> {
-
-        CallServiceTask(Context context, HAServer server) {
-            super(context, server);
-        }
-
-        @Override
-        protected Void doInBackground(String... strings) {
-            mAPI.callService(strings[0], strings[1], strings[2]);
-            return null;
-        }
-    }
-
-    private static class GetStateTask extends MyAPITask<String,Void,String> {
-        private final Intent mFireIntent;
-        private final String mVariable;
-
-        GetStateTask(Context context, HAServer server, Intent fireIntent, String variable) {
-            super(context, server);
-            mFireIntent = fireIntent;
-            mVariable = variable;
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            return mAPI.getState(strings[0]);
-        }
-
-        @Override
-        protected void onPostExecute(String state) {
-            Context context = mContext.get();
-            if (context == null) return;
-
-            Bundle vars = new Bundle();
-            vars.putString(mVariable, state);
-            TaskerPlugin.Setting.signalFinish(context, mFireIntent, TaskerPlugin.Setting.RESULT_CODE_OK, vars);
-        }
-    }
 
     @Override
     protected boolean isBundleValid(@NonNull final Bundle bundle) {
@@ -95,21 +43,9 @@ public final class FireReceiver extends AbstractPluginSettingReceiver {
 
     @Override
     protected void firePluginSetting(@NonNull final Context context, @NonNull final Intent intent, @NonNull final Bundle bundle) {
-        if (bundle.getInt(PluginBundleValues.BUNDLE_EXTRA_INT_VERSION_CODE) < 3 || bundle.getInt(Constants.BUNDLE_EXTRA_BUNDLE_TYPE) == Constants.BUNDLE_CALL_SERVICE) {
-            String[] service = PluginBundleValues.getService(bundle).split("\\.");
-
-            new CallServiceTask(context, HAServerStore.getInstance().getServers().get(PluginBundleValues.getServer(bundle)))
-                    .execute(service[0], service[1], PluginBundleValues.getData(bundle));
-        } else {
-//            if (!TaskerPlugin.Setting.hostSupportsVariableReturn(bundle)) {
-//                setResultCode(TaskerPlugin.Setting.RESULT_CODE_FAILED);
-//                return;
-//            }
-
-            String entity = GetStatePluginBundleValues.getEntity(bundle);
-            new GetStateTask(context, HAServerStore.getInstance().getServers().get(PluginBundleValues.getServer(bundle)), intent, GetStatePluginBundleValues.getVariable(bundle)).execute(entity);
-            setResultCode(TaskerPlugin.Setting.RESULT_CODE_PENDING);
-        }
+        intent.putExtra(ActionService.EXT_BUNDLE, bundle);
+        ActionService.enqueueWork(context, intent);
+        setResultCode(TaskerPlugin.Setting.RESULT_CODE_PENDING);
     }
 
 
