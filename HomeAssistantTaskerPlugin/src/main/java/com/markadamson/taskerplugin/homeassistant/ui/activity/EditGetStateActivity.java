@@ -29,6 +29,9 @@ import android.widget.Toast;
 
 import com.markadamson.taskerplugin.homeassistant.R;
 import com.markadamson.taskerplugin.homeassistant.bundle.GetStatePluginBundleValues;
+import com.markadamson.taskerplugin.homeassistant.model.HAAPI;
+import com.markadamson.taskerplugin.homeassistant.model.HAAPIException;
+import com.markadamson.taskerplugin.homeassistant.model.HAAPIResult;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPITask;
 import com.markadamson.taskerplugin.homeassistant.model.HAServer;
 import com.markadamson.taskerplugin.homeassistant.ui.ServerSelectionUI;
@@ -36,9 +39,6 @@ import com.twofortyfouram.locale.sdk.client.ui.activity.AbstractAppCompatPluginA
 import com.twofortyfouram.log.Lumberjack;
 
 import net.jcip.annotations.NotThreadSafe;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -73,17 +73,23 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
         }
 
         @Override
-        protected List<String> doInBackground(Void... voids) {
-            return mAPI.getEntities();
+        protected List<String> doAPIInBackground(HAAPI api, Void... voids) throws HAAPIException {
+            return api.getEntities();
         }
 
         @Override
-        protected void onPostExecute(List<String> entities) {
+        protected void onPostExecute(HAAPIResult<List<String>> entities) {
             EditGetStateActivity activity = activityReference.get();
             if (activity == null || activity.isFinishing()) return;
 
+            if (entities.getException() != null) {
+                entities.getException().printStackTrace();
+                Toast.makeText(activity, entities.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             activity.mEntities.clear();
-            activity.mEntities.addAll(entities);
+            activity.mEntities.addAll(entities.getResult());
             activity.mEntityAdapter.notifyDataSetChanged();
 
             if (activity.mEntities.contains(activity.mEntity))
@@ -98,16 +104,22 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
         }
 
         @Override
-        protected String doInBackground(String... strings) {
-            return mAPI.getState(strings[0]);
+        protected String doAPIInBackground(HAAPI api, String... strings) throws HAAPIException {
+            return api.getState(strings[0]);
         }
 
         @Override
-        protected void onPostExecute(String state) {
+        protected void onPostExecute(HAAPIResult<String> state) {
             EditGetStateActivity activity = activityReference.get();
             if (activity == null || activity.isFinishing()) return;
 
-            Toast.makeText(activity, state, Toast.LENGTH_SHORT).show();
+            if (state.getException() != null) {
+                state.getException().printStackTrace();
+                Toast.makeText(activity, state.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Toast.makeText(activity, state.getResult(), Toast.LENGTH_SHORT).show();
         }
     }
 

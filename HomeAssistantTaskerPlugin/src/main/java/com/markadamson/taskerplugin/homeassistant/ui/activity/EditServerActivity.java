@@ -12,6 +12,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.markadamson.taskerplugin.homeassistant.R;
+import com.markadamson.taskerplugin.homeassistant.model.HAAPI;
+import com.markadamson.taskerplugin.homeassistant.model.HAAPIException;
+import com.markadamson.taskerplugin.homeassistant.model.HAAPIResult;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPITask;
 import com.markadamson.taskerplugin.homeassistant.model.HAServer;
 import com.twofortyfouram.log.Lumberjack;
@@ -41,16 +44,22 @@ public class EditServerActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Boolean doInBackground(Void... voids) {
-            return mAPI.testServer();
+        protected Boolean doAPIInBackground(HAAPI api, Void... voids) throws HAAPIException {
+            return api.testServer();
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {
+        protected void onPostExecute(HAAPIResult<Boolean> result) {
             EditServerActivity activity = activityReference.get();
             if (activity == null || activity.isFinishing()) return;
 
-            Toast.makeText(activity, result ? R.string.connection_successful : R.string.connection_failed, Toast.LENGTH_SHORT).show();
+            if (result.getException() != null) {
+                result.getException().printStackTrace();
+                Toast.makeText(activity, result.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Toast.makeText(activity, result.getResult() ? R.string.connection_successful : R.string.connection_failed, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -60,9 +69,9 @@ public class EditServerActivity extends AppCompatActivity {
 
         setContentView(R.layout.edit_server);
 
-        etServerName = (EditText) findViewById(R.id.et_server_name);
-        etBaseURL = (EditText) findViewById(R.id.et_base_url);
-        etAccessToken = (EditText) findViewById(R.id.et_access_token);
+        etServerName = findViewById(R.id.et_server_name);
+        etBaseURL = findViewById(R.id.et_base_url);
+        etAccessToken = findViewById(R.id.et_access_token);
 
         Intent i = getIntent();
         if (i.hasExtra(EXT_SERVER_NAME))

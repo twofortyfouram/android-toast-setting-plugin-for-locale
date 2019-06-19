@@ -10,8 +10,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,13 +23,10 @@ public class HAAPI {
         this.mServer = mServer;
     }
 
-    public boolean testServer() {
-        boolean result = false;
-
-        URL url = null;
+    public boolean testServer() throws HAAPIException {
         try {
-            url = new URL(mServer.getBaseURL() + "/api/");
-            HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
+            URL url = new URL(mServer.getBaseURL() + "/api/");
+            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
             httpConn.setRequestMethod("GET");
             httpConn.setRequestProperty("Authorization", "Bearer " + mServer.getAccessToken());
 
@@ -41,26 +36,18 @@ public class HAAPI {
             String line = bufferedReader.readLine();
 
             JSONObject apiResult = new JSONObject(line);
-            result = apiResult.has("message") && "API running.".equals(apiResult.getString("message"));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ProtocolException e) {
-            e.printStackTrace();
+            return apiResult.has("message") && "API running.".equals(apiResult.getString("message"));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new HAAPIException("Network Error", e);
         } catch (JSONException e) {
-            e.printStackTrace();
+            throw new HAAPIException("JSON Error", e);
         }
-
-        return result;
     }
 
-    public List<String> getServices() {
-        List<String> result = new ArrayList<>();
-
+    public List<String> getServices() throws HAAPIException {
         try {
             URL url = new URL(mServer.getBaseURL() + "/api/services");
-            HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
+            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
             httpConn.setRequestMethod("GET");
             httpConn.setRequestProperty("Authorization", "Bearer " + mServer.getAccessToken());
 
@@ -69,6 +56,7 @@ public class HAAPI {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String line = bufferedReader.readLine();
 
+            List<String> result = new ArrayList<>();
             JSONArray apiResults = new JSONArray(line);
             for (int d = 0; d < apiResults.length(); d++) {
                 JSONObject jsonDomain = apiResults.getJSONObject(d);
@@ -79,20 +67,17 @@ public class HAAPI {
                 while (keys.hasNext())
                     result.add(strDomain + "." + keys.next());
             }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+
+            Collections.sort(result);
+            return result;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new HAAPIException("Network Error", e);
         } catch (JSONException e) {
-            e.printStackTrace();
+            throw new HAAPIException("JSON Error", e);
         }
-
-        Collections.sort(result);
-
-        return result;
     }
 
-    public void callService(String domain, String service, String data) {
+    public void callService(String domain, String service, String data) throws HAAPIException {
         try {
             URL url = new URL(mServer.getBaseURL() + "/api/services/" + domain + "/" + service);
             HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
@@ -113,18 +98,14 @@ public class HAAPI {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             bufferedReader.readLine();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new HAAPIException("Network Error", e);
         } catch (JSONException e) {
-            e.printStackTrace();
+            throw new HAAPIException("JSON Error", e);
         }
     }
 
-    public List<String> getEntities() {
-        List<String> result = new ArrayList<>();
-
+    public List<String> getEntities() throws HAAPIException {
         try {
             URL url = new URL(mServer.getBaseURL() + "/api/states");
             HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
@@ -136,26 +117,21 @@ public class HAAPI {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String line = bufferedReader.readLine();
 
+            List<String> result = new ArrayList<>();
             JSONArray apiResults = new JSONArray(line);
             for (int e = 0; e < apiResults.length(); e++)
                 result.add(apiResults.getJSONObject(e).getString("entity_id"));
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Collections.sort(result);
+            return result;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new HAAPIException("Network Error", e);
         } catch (JSONException e) {
-            e.printStackTrace();
+            throw new HAAPIException("JSON Error", e);
         }
-
-        Collections.sort(result);
-
-        return result;
     }
 
-    public String getState(String entityId) {
-        String result;
-
+    public String getState(String entityId) throws HAAPIException {
         try {
             URL url = new URL(mServer.getBaseURL() + "/api/states/" + entityId);
             HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
@@ -167,18 +143,11 @@ public class HAAPI {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String line = bufferedReader.readLine();
 
-            result = new JSONObject(line).getString("state");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            result = e.getMessage();
+            return new JSONObject(line).getString("state");
         } catch (IOException e) {
-            e.printStackTrace();
-            result = e.getMessage();
+            throw new HAAPIException("Network Error", e);
         } catch (JSONException e) {
-            e.printStackTrace();
-            result = e.getMessage();
+            throw new HAAPIException("JSON Error", e);
         }
-
-        return result;
     }
 }

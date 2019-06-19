@@ -29,6 +29,9 @@ import android.widget.Toast;
 
 import com.markadamson.taskerplugin.homeassistant.R;
 import com.markadamson.taskerplugin.homeassistant.bundle.PluginBundleValues;
+import com.markadamson.taskerplugin.homeassistant.model.HAAPI;
+import com.markadamson.taskerplugin.homeassistant.model.HAAPIException;
+import com.markadamson.taskerplugin.homeassistant.model.HAAPIResult;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPITask;
 import com.markadamson.taskerplugin.homeassistant.model.HAServer;
 import com.markadamson.taskerplugin.homeassistant.ui.ServerSelectionUI;
@@ -73,17 +76,23 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
         }
 
         @Override
-        protected List<String> doInBackground(Void... voids) {
-            return mAPI.getServices();
+        protected List<String> doAPIInBackground(HAAPI api, Void... voids) throws HAAPIException {
+            return api.getServices();
         }
 
         @Override
-        protected void onPostExecute(List<String> services) {
+        protected void onPostExecute(HAAPIResult<List<String>> services) {
             EditActivity activity = activityReference.get();
             if (activity == null || activity.isFinishing()) return;
 
+            if (services.getException() != null) {
+                services.getException().printStackTrace();
+                Toast.makeText(activity, services.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             activity.mServices.clear();
-            activity.mServices.addAll(services);
+            activity.mServices.addAll(services.getResult());
             activity.mServiceAdapter.notifyDataSetChanged();
 
             if (activity.mServices.contains(activity.mService))
@@ -98,9 +107,23 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
         }
 
         @Override
-        protected Void doInBackground(String... strings) {
-            mAPI.callService(strings[0], strings[1], strings[2]);
+        protected Void doAPIInBackground(HAAPI api, String... strings) throws HAAPIException {
+            api.callService(strings[0], strings[1], strings[2]);
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(HAAPIResult<Void> result) {
+            EditActivity activity = activityReference.get();
+            if (activity == null || activity.isFinishing()) return;
+
+            if (result.getException() != null) {
+                result.getException().printStackTrace();
+                Toast.makeText(activity, result.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Toast.makeText(activity, "Success!", Toast.LENGTH_SHORT).show();
         }
     }
 

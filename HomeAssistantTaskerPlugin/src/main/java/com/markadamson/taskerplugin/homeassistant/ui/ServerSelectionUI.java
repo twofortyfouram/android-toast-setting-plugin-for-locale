@@ -38,7 +38,7 @@ public class ServerSelectionUI {
         mServers = new ArrayList<>();
         for(UUID id : mIds)
             mServers.add(serverMap.get(id));
-        mServerAdapter = new ArrayAdapter<HAServer>(activity, android.R.layout.simple_spinner_dropdown_item, mServers);
+        mServerAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_dropdown_item, mServers);
 
         spnServers = (Spinner) activity.findViewById(R.id.spn_server);
         spnServers.setAdapter(mServerAdapter);
