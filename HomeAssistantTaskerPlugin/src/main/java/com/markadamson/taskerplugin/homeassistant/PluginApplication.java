@@ -15,9 +15,9 @@
 
 package com.markadamson.taskerplugin.homeassistant;
 
-import com.twofortyfouram.log.Lumberjack;
-
 import android.app.Application;
+
+import com.twofortyfouram.log.Lumberjack;
 
 /**
  * Implements an application object for the plug-in.
@@ -27,17 +27,9 @@ import android.app.Application;
  * options globally for the app.
  */
 public final class PluginApplication extends Application {
-
-    private static PluginApplication instance;
-
-    public static PluginApplication get() {
-        return instance;
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
         Lumberjack.init(getApplicationContext());
     }
 }

@@ -2,7 +2,7 @@ package com.markadamson.taskerplugin.homeassistant.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -17,12 +17,18 @@ import com.markadamson.taskerplugin.homeassistant.model.HAAPIException;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPIResult;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPITask;
 import com.markadamson.taskerplugin.homeassistant.model.HAServer;
-import com.twofortyfouram.log.Lumberjack;
 
 import java.lang.ref.WeakReference;
 
 public class EditServerActivity extends AppCompatActivity {
 
+    public static final int REQ_NEW_SERVER = 0;
+    public static final int REQ_EDIT_SERVER = 1;
+
+    private static final int[] MODE_TITLE = {R.string.add_a_server, R.string.edit_server};
+
+    public static final String EXT_HOST_NAME = "com.markadamson.taskerplugin.homeassistant.ui.activity.EditServerActivity.EXT_HOST_NAME";
+    public static final String EXT_REQUEST_CODE = "com.markadamson.taskerplugin.homeassistant.ui.activity.EditServerActivity.EXT_REQUEST CODE";
     public static final String EXT_SERVER_NAME = "com.markadamson.taskerplugin.homeassistant.ui.activity.EditServerActivity.EXT_SERVER_NAME";
     public static final String EXT_BASE_URL = "com.markadamson.taskerplugin.homeassistant.ui.activity.EditServerActivity.EXT_BASE_URL";
     public static final String EXT_ACCESS_TOKEN = "com.markadamson.taskerplugin.homeassistant.ui.activity.EditServerActivity.EXT_ACCESS_TOKEN";
@@ -81,24 +87,12 @@ public class EditServerActivity extends AppCompatActivity {
         if (i.hasExtra(EXT_ACCESS_TOKEN))
             etAccessToken.setText(i.getStringExtra(EXT_ACCESS_TOKEN));
 
-        /*
-         * To help the user keep context, the title shows the host's name and the subtitle
-         * shows the plug-in's name.
-         */
-        CharSequence callingApplicationLabel = null;
-        try {
-            callingApplicationLabel =
-                    getPackageManager().getApplicationLabel(
-                            getPackageManager().getApplicationInfo(getCallingPackage(),
-                                    0));
-        } catch (final PackageManager.NameNotFoundException e) {
-            Lumberjack.e("Calling package couldn't be found%s", e); //$NON-NLS-1$
-        }
-        if (null != callingApplicationLabel) {
-            setTitle(callingApplicationLabel);
-        }
+        if (i.hasExtra(EXT_HOST_NAME))
+            setTitle(i.getCharSequenceExtra(EXT_HOST_NAME));
 
-        getSupportActionBar().setSubtitle(R.string.plugin_name);
+        Resources r = getResources();
+        String mode = r.getString(MODE_TITLE[i.getIntExtra(EXT_REQUEST_CODE, REQ_EDIT_SERVER)]);
+        getSupportActionBar().setSubtitle(r.getString(R.string.activity_subtitle, mode));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

@@ -17,6 +17,7 @@ package com.markadamson.taskerplugin.homeassistant.ui.activity;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.Menu;
@@ -146,11 +147,12 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
             setTitle(callingApplicationLabel);
         }
 
-        getSupportActionBar().setSubtitle(R.string.plugin_name);
+        Resources r = getResources();
+        getSupportActionBar().setSubtitle(r.getString(R.string.activity_subtitle, r.getString(R.string.get_state)));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mServerUI = new ServerSelectionUI(this, new ServerSelectionUI.OnServerSelectedListener() {
+        mServerUI = new ServerSelectionUI(this, callingApplicationLabel, new ServerSelectionUI.OnServerSelectedListener() {
             @Override
             public void onServerSelected(HAServer server) {
                 new GetEntitiesTask(EditGetStateActivity.this, server).execute();

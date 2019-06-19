@@ -17,6 +17,7 @@ package com.markadamson.taskerplugin.homeassistant.ui.activity;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.Menu;
@@ -57,7 +58,7 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
     private Spinner spnServices;
     private EditText etServiceData;
 
-    private String mService/*, mServiceData*/;
+    private String mService;
 
     private abstract static class MyAPITask<Params,Progress,Result> extends HAAPITask<Params,Progress,Result> {
         WeakReference<EditActivity> activityReference;
@@ -150,11 +151,12 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
             setTitle(callingApplicationLabel);
         }
 
-        getSupportActionBar().setSubtitle(R.string.plugin_name);
+        Resources r = getResources();
+        getSupportActionBar().setSubtitle(r.getString(R.string.activity_subtitle, r.getString(R.string.call_service)));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mServerUI = new ServerSelectionUI(this, new ServerSelectionUI.OnServerSelectedListener() {
+        mServerUI = new ServerSelectionUI(this, callingApplicationLabel, new ServerSelectionUI.OnServerSelectedListener() {
             @Override
             public void onServerSelected(HAServer server) {
                 new GetServicesTask(EditActivity.this, server).execute();

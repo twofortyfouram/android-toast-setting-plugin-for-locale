@@ -7,8 +7,8 @@
     <!-- Name of the plug-in that appears in Locale -->
     <string name="plugin_name">Home Assistant</string>
 
-    <!-- Hint text in the toast edit text -->
-    <string name="message_hint">Scheduled Toast</string>
+    <!-- Subtitle that appears in config activities -->
+    <string name="activity_subtitle">Home Assistant - %1$s</string>
 
     <!-- Discard menu item -->
     <string name="menu_cancel">Cancel</string>

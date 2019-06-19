@@ -19,10 +19,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ServerSelectionUI {
-
-    private static final int REQ_NEW_SERVER = 1;
-    private static final int REQ_EDIT_SERVER = 2;
-
+    private final CharSequence mHostName;
     private final HAServerStore mServerStore;
     private final Spinner spnServers;
 
@@ -30,8 +27,9 @@ public class ServerSelectionUI {
     private List<HAServer> mServers;
     private ArrayAdapter<HAServer> mServerAdapter;
 
-    public ServerSelectionUI(final Activity activity, final OnServerSelectedListener serverListener) {
-        mServerStore = HAServerStore.getInstance();
+    public ServerSelectionUI(final Activity activity, final CharSequence hostName, final OnServerSelectedListener serverListener) {
+        mHostName = hostName;
+        mServerStore = new HAServerStore(activity);
 
         Map<UUID,HAServer> serverMap = mServerStore.getServers();
         mIds = new ArrayList<>(serverMap.keySet());
@@ -40,7 +38,7 @@ public class ServerSelectionUI {
             mServers.add(serverMap.get(id));
         mServerAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_dropdown_item, mServers);
 
-        spnServers = (Spinner) activity.findViewById(R.id.spn_server);
+        spnServers = activity.findViewById(R.id.spn_server);
         spnServers.setAdapter(mServerAdapter);
 
         spnServers.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -61,7 +59,11 @@ public class ServerSelectionUI {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        activity.startActivityForResult(new Intent(activity, EditServerActivity.class), REQ_NEW_SERVER);
+                        activity.startActivityForResult(
+                                new Intent(activity, EditServerActivity.class)
+                                        .putExtra(EditServerActivity.EXT_HOST_NAME, mHostName)
+                                        .putExtra(EditServerActivity.EXT_REQUEST_CODE, EditServerActivity.REQ_NEW_SERVER),
+                                EditServerActivity.REQ_NEW_SERVER);
                     }
                 }
         );
@@ -74,10 +76,12 @@ public class ServerSelectionUI {
                             HAServer server = mServerAdapter.getItem(spnServers.getSelectedItemPosition());
                             activity.startActivityForResult(
                                     new Intent(activity, EditServerActivity.class)
+                                            .putExtra(EditServerActivity.EXT_HOST_NAME, mHostName)
+                                            .putExtra(EditServerActivity.EXT_REQUEST_CODE, EditServerActivity.REQ_EDIT_SERVER)
                                             .putExtra(EditServerActivity.EXT_SERVER_NAME, server.getName())
                                             .putExtra(EditServerActivity.EXT_BASE_URL, server.getBaseURL())
                                             .putExtra(EditServerActivity.EXT_ACCESS_TOKEN, server.getAccessToken()),
-                                    REQ_EDIT_SERVER
+                                    EditServerActivity.REQ_EDIT_SERVER
                             );
                         }
                     }
@@ -117,7 +121,7 @@ public class ServerSelectionUI {
     }
 
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!Arrays.asList(new Integer[]{REQ_NEW_SERVER,REQ_EDIT_SERVER}).contains(requestCode))
+        if (!Arrays.asList(new Integer[]{EditServerActivity.REQ_NEW_SERVER,EditServerActivity.REQ_EDIT_SERVER}).contains(requestCode))
             return false;
 
         if (resultCode == Activity.RESULT_OK) {
@@ -128,11 +132,11 @@ public class ServerSelectionUI {
             );
 
             switch (requestCode) {
-                case ServerSelectionUI.REQ_NEW_SERVER:
+                case EditServerActivity.REQ_NEW_SERVER:
                     mIds.add(mServerStore.addServer(server));
                     mServerAdapter.add(server);
                     break;
-                case ServerSelectionUI.REQ_EDIT_SERVER:
+                case EditServerActivity.REQ_EDIT_SERVER:
                     int idx = spnServers.getSelectedItemPosition();
                     mServerStore.updateServer(mIds.get(idx), server);
                     mServers.set(idx, server);

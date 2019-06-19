@@ -37,16 +37,17 @@ public class ActionService extends JobIntentService {
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
         Bundle bundle = intent.getBundleExtra(EXT_BUNDLE);
+        HAServerStore servers = new HAServerStore(this);
 
         try {
             if (bundle.getInt(PluginBundleValues.BUNDLE_EXTRA_INT_VERSION_CODE) < 3 || bundle.getInt(Constants.BUNDLE_EXTRA_BUNDLE_TYPE) == Constants.BUNDLE_CALL_SERVICE) {
                 String[] service = PluginBundleValues.getService(bundle).split("\\.");
-                new HAAPI(HAServerStore.getInstance().getServers().get(PluginBundleValues.getServer(bundle)))
+                new HAAPI(servers.getServers().get(PluginBundleValues.getServer(bundle)))
                         .callService(service[0], service[1], PluginBundleValues.getData(bundle));
                 TaskerPlugin.Setting.signalFinish(this, intent, TaskerPlugin.Setting.RESULT_CODE_OK, null);
             } else {
                 String entity = GetStatePluginBundleValues.getEntity(bundle);
-                String state = new HAAPI(HAServerStore.getInstance().getServers().get(PluginBundleValues.getServer(bundle)))
+                String state = new HAAPI(servers.getServers().get(PluginBundleValues.getServer(bundle)))
                         .getState(entity);
                 Bundle vars = new Bundle();
                 vars.putString(GetStatePluginBundleValues.getVariable(bundle), state);

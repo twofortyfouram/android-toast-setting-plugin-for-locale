@@ -1,9 +1,8 @@
 package com.markadamson.taskerplugin.homeassistant.model;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-
-import com.markadamson.taskerplugin.homeassistant.PluginApplication;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,25 +13,18 @@ import java.util.Map;
 import java.util.UUID;
 
 public class HAServerStore {
-    private static HAServerStore instance = null;
+    private final Context mContext;
 
-    private HAServerStore() {
-
+    public HAServerStore(final Context context) {
+        mContext = context;
     }
 
-    public static HAServerStore getInstance() {
-        if (instance == null)
-            instance = new HAServerStore();
-
-        return instance;
-    }
-
-    private String PREFS_KEY = "com.markadamson.taskerplugin.homeassistant.model.HAServerStore.PREFS_KEY";
+    private static String PREFS_KEY = "com.markadamson.taskerplugin.homeassistant.model.HAServerStore.PREFS_KEY";
 
     public Map<UUID, HAServer> getServers() {
         Map<UUID,HAServer> result = new HashMap<>();
 
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(PluginApplication.get());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
         if (prefs.contains(PREFS_KEY)) {
             try {
                 JSONObject jsonServers = new JSONObject(prefs.getString(PREFS_KEY, ""));
@@ -52,7 +44,7 @@ public class HAServerStore {
     }
 
     public UUID addServer(HAServer server) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(PluginApplication.get());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 
         JSONObject jsonServers;
         if (prefs.contains(PREFS_KEY)) {
@@ -78,7 +70,7 @@ public class HAServerStore {
     }
 
     public void deleteServer(UUID serverID) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(PluginApplication.get());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 
         if (prefs.contains(PREFS_KEY)) {
             JSONObject jsonServers;
@@ -98,7 +90,7 @@ public class HAServerStore {
     }
 
     public void updateServer(UUID serverID, HAServer server) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(PluginApplication.get());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
 
         if (!prefs.contains(PREFS_KEY))
             throw new RuntimeException("No such server in storage!");
