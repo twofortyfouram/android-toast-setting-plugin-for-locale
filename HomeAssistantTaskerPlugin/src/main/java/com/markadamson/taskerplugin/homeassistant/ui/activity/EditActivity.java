@@ -24,8 +24,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.markadamson.taskerplugin.homeassistant.R;
@@ -53,27 +53,23 @@ import java.util.UUID;
 public final class EditActivity extends AbstractAppCompatPluginActivity {
     private ServerSelectionUI mServerUI;
 
-    private List<String> mServices;
     private ArrayAdapter<String> mServiceAdapter;
-    private Spinner spnServices;
+    private AutoCompleteTextView atvService;
     private EditText etServiceData;
-
-    private String mService;
 
     private abstract static class MyAPITask<Params,Progress,Result> extends HAAPITask<Params,Progress,Result> {
         WeakReference<EditActivity> activityReference;
 
-        MyAPITask(EditActivity context, HAServer server) {
+        MyAPITask(EditActivity activity, HAServer server) {
             super(server);
-            activityReference = new WeakReference<>(context);
+            activityReference = new WeakReference<>(activity);
         }
     }
 
     private static class GetServicesTask extends MyAPITask<Void,Void,List<String>> {
-        GetServicesTask(EditActivity context, HAServer server) {
-            super(context, server);
-            context.mServices.clear();
-            context.mServiceAdapter.notifyDataSetChanged();
+        GetServicesTask(EditActivity activity, HAServer server) {
+            super(activity, server);
+            activity.mServiceAdapter.clear();
         }
 
         @Override
@@ -92,12 +88,8 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
                 return;
             }
 
-            activity.mServices.clear();
-            activity.mServices.addAll(services.getResult());
-            activity.mServiceAdapter.notifyDataSetChanged();
-
-            if (activity.mServices.contains(activity.mService))
-                activity.spnServices.setSelection(activity.mServices.indexOf(activity.mService));
+            activity.mServiceAdapter.clear();
+            activity.mServiceAdapter.addAll(services.getResult());
         }
     }
 
@@ -164,24 +156,32 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
 
             @Override
             public void onNothingSelected() {
-                mServices.clear();
-                mServiceAdapter.notifyDataSetChanged();
+                mServiceAdapter.clear();
             }
         });
 
-        mServices = new ArrayList<>();
-        mServiceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, mServices);
+        mServiceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<String>());
 
-        spnServices = (Spinner) findViewById(R.id.spn_service);
-        spnServices.setAdapter(mServiceAdapter);
+        atvService = findViewById(R.id.atv_service);
+        atvService.setAdapter(mServiceAdapter);
 
-        etServiceData = (EditText) findViewById(R.id.et_service_data);
+        etServiceData = findViewById(R.id.et_service_data);
 
         findViewById(R.id.btn_test_service).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        String[] service = mServices.get(spnServices.getSelectedItemPosition()).split("\\.");
+                        if (atvService.getText().toString().contains("%")) {
+                            Toast.makeText(EditActivity.this, "Cannot test using variables!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        String[] service = atvService.getText().toString().split("\\.");
+                        if (service.length != 2) {
+                            Toast.makeText(EditActivity.this, "Invalid service!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         new TestServiceTask(EditActivity.this, mServerUI.currentServer())
                                 .execute(service[0], service[1], etServiceData.getText().toString());
                     }
@@ -195,31 +195,9 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
         mServerUI.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        if (mServerUI.serverCount() > 0) {
-            outState.putString("server", mServerUI.currentId().toString());
-            outState.putString("service", mServices.get(spnServices.getSelectedItemPosition()));
-            outState.putString("data", etServiceData.getText().toString());
-        }
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState.containsKey("server"))
-            restoreState(
-                    UUID.fromString(savedInstanceState.getString("server")),
-                    savedInstanceState.getString("service"),
-                    savedInstanceState.getString("data")
-            );
-    }
-
     private void restoreState(UUID id, String service, String data) {
-        mService = service;
-
         mServerUI.setSelection(id);
+        atvService.setText(service);
         etServiceData.setText(data);
     }
 
@@ -242,7 +220,7 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
     public Bundle getResultBundle() {
         return PluginBundleValues.generateBundle(getApplicationContext(),
                 mServerUI.currentId(),
-                mServices.get(spnServices.getSelectedItemPosition()),
+                atvService.getText().toString(),
                 etServiceData.getText().toString());
     }
 
@@ -273,7 +251,7 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
 
         if (mServerUI.serverCount() == 0)
             Toast.makeText(this, "Please select a Server", Toast.LENGTH_SHORT).show();
-        else if (mServices.isEmpty())
+        else if (atvService.getText().toString().isEmpty())
             Toast.makeText(this, "Please select a Service", Toast.LENGTH_SHORT).show();
         else {
             result = true;

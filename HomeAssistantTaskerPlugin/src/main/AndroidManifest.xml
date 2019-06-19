@@ -43,6 +43,7 @@
 
         <activity
             android:name="com.markadamson.taskerplugin.homeassistant.ui.activity.EditActivity"
+            android:configChanges="orientation|screenSize"
             android:exported="false"
             android:label="@string/call_service"
             android:theme="@style/Theme.AppCompat"
@@ -53,6 +54,7 @@
 
         <activity
             android:name="com.markadamson.taskerplugin.homeassistant.ui.activity.EditGetStateActivity"
+            android:configChanges="orientation|screenSize"
             android:exported="false"
             android:label="@string/get_state"
             android:theme="@style/Theme.AppCompat"

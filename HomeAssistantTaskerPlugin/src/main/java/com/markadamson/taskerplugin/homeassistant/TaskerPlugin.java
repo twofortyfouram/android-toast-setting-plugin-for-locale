@@ -467,6 +467,10 @@ public class TaskerPlugin {
             );
         }
 
+        public static boolean hasVariableReplaceKeys(Bundle resultBundleToHost) {
+            return resultBundleToHost.containsKey(BUNDLE_KEY_VARIABLE_REPLACE_STRINGS);
+        }
+
         /**
          * Used by: plugin FireReceiver
          *

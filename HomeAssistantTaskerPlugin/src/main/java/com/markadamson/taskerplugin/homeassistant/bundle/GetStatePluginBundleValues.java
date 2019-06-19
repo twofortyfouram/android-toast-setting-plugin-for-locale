@@ -15,17 +15,18 @@
 
 package com.markadamson.taskerplugin.homeassistant.bundle;
 
+import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.markadamson.taskerplugin.homeassistant.Constants;
+import com.markadamson.taskerplugin.homeassistant.TaskerPlugin;
 import com.twofortyfouram.assertion.BundleAssertions;
 import com.twofortyfouram.log.Lumberjack;
 import com.twofortyfouram.spackle.AppBuildInfo;
 
 import net.jcip.annotations.ThreadSafe;
-
-import android.content.Context;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import java.util.UUID;
 
@@ -100,7 +101,14 @@ public final class GetStatePluginBundleValues {
             BundleAssertions.assertHasInt(bundle, BUNDLE_EXTRA_INT_VERSION_CODE);
             BundleAssertions.assertHasInt(bundle, Constants.BUNDLE_EXTRA_BUNDLE_TYPE,
                     Constants.BUNDLE_GET_STATE, Constants.BUNDLE_GET_STATE);
-            BundleAssertions.assertKeyCount(bundle, 5);
+
+            int bundleVer = bundle.getInt(BUNDLE_EXTRA_INT_VERSION_CODE), expectedCount = 5;
+
+            // Bundle may now have replacement vars key:
+            if (bundleVer >= 5 && TaskerPlugin.Setting.hasVariableReplaceKeys(bundle))
+                expectedCount++;
+
+            BundleAssertions.assertKeyCount(bundle, expectedCount);
         } catch (final AssertionError e) {
             Lumberjack.e("Bundle failed verification%s", e); //$NON-NLS-1$
             return false;
@@ -131,6 +139,7 @@ public final class GetStatePluginBundleValues {
         result.putString(BUNDLE_EXTRA_STRING_SERVER, server.toString());
         result.putString(BUNDLE_EXTRA_STRING_ENTITY, entity);
         result.putString(BUNDLE_EXTRA_STRING_VARIABLE, variable);
+        TaskerPlugin.Setting.setVariableReplaceKeys(result, new String[] {BUNDLE_EXTRA_STRING_ENTITY});
 
         return result;
     }

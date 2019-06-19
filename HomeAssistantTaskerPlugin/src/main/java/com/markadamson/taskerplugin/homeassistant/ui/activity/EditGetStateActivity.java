@@ -24,8 +24,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.markadamson.taskerplugin.homeassistant.R;
@@ -50,12 +50,9 @@ import java.util.UUID;
 public final class EditGetStateActivity extends AbstractAppCompatPluginActivity {
     private ServerSelectionUI mServerUI;
 
-    private List<String> mEntities;
     private ArrayAdapter<String> mEntityAdapter;
-    private Spinner spnEntities;
+    private AutoCompleteTextView atvEntity;
     private EditText etVariable;
-
-    private String mEntity;
 
     private abstract static class MyAPITask<Params,Progress,Result> extends HAAPITask<Params,Progress,Result> {
         WeakReference<EditGetStateActivity> activityReference;
@@ -67,10 +64,9 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
     }
 
     private static class GetEntitiesTask extends MyAPITask<Void,Void,List<String>> {
-        GetEntitiesTask(EditGetStateActivity context, HAServer server) {
-            super(context, server);
-            context.mEntities.clear();
-            context.mEntityAdapter.notifyDataSetChanged();
+        GetEntitiesTask(EditGetStateActivity activity, HAServer server) {
+            super(activity, server);
+            activity.mEntityAdapter.clear();
         }
 
         @Override
@@ -89,12 +85,8 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
                 return;
             }
 
-            activity.mEntities.clear();
-            activity.mEntities.addAll(entities.getResult());
-            activity.mEntityAdapter.notifyDataSetChanged();
-
-            if (activity.mEntities.contains(activity.mEntity))
-                activity.spnEntities.setSelection(activity.mEntities.indexOf(activity.mEntity));
+            activity.mEntityAdapter.clear();
+            activity.mEntityAdapter.addAll(entities.getResult());
         }
     }
 
@@ -160,16 +152,14 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
 
             @Override
             public void onNothingSelected() {
-                mEntities.clear();
-                mEntityAdapter.notifyDataSetChanged();
+                mEntityAdapter.clear();
             }
         });
 
-        mEntities = new ArrayList<>();
-        mEntityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, mEntities);
+        mEntityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<String>());
 
-        spnEntities = (Spinner) findViewById(R.id.spn_entity);
-        spnEntities.setAdapter(mEntityAdapter);
+        atvEntity = findViewById(R.id.atv_entity);
+        atvEntity.setAdapter(mEntityAdapter);
 
         etVariable = (EditText) findViewById(R.id.et_variable);
 
@@ -177,8 +167,13 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        if (atvEntity.getText().toString().contains("%")) {
+                            Toast.makeText(EditGetStateActivity.this, "Cannot test using variables in entity id!", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         new TestEntityTask(EditGetStateActivity.this, mServerUI.currentServer())
-                                .execute(mEntities.get(spnEntities.getSelectedItemPosition()));
+                                .execute(atvEntity.getText().toString());
                     }
                 }
         );
@@ -190,32 +185,10 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
         mServerUI.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        if (mServerUI.serverCount() > 0) {
-            outState.putString("server", mServerUI.currentId().toString());
-            outState.putString("entity", mEntities.get(spnEntities.getSelectedItemPosition()));
-            outState.putString("variable", etVariable.getText().toString());
-        }
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        if (savedInstanceState.containsKey("server"))
-            restoreState(
-                    UUID.fromString(savedInstanceState.getString("server")),
-                    savedInstanceState.getString("entity"),
-                    savedInstanceState.getString("variable")
-            );
-    }
-
-    private void restoreState(UUID id, String service, String data) {
-        mEntity = service;
-
+    private void restoreState(UUID id, String entity, String variable) {
         mServerUI.setSelection(id);
-        etVariable.setText(data);
+        atvEntity.setText(entity);
+        etVariable.setText(variable);
     }
 
     @Override
@@ -237,7 +210,7 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
     public Bundle getResultBundle() {
         return GetStatePluginBundleValues.generateBundle(getApplicationContext(),
                 mServerUI.currentId(),
-                mEntities.get(spnEntities.getSelectedItemPosition()),
+                atvEntity.getText().toString(),
                 etVariable.getText().toString());
     }
 
@@ -268,20 +241,10 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
 
         if (mServerUI.serverCount() == 0)
             Toast.makeText(this, "Please select a Server", Toast.LENGTH_SHORT).show();
-        else if (mEntities.isEmpty())
+        else if (atvEntity.getText().toString().isEmpty())
             Toast.makeText(this, "Please select an Entity", Toast.LENGTH_SHORT).show();
-        else {
+        else
             result = true;
-
-//            if (!etVariable.getText().toString().isEmpty())
-//                try {
-//                    new JSONObject(etVariable.getText().toString());
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                    Toast.makeText(this, "Invalid Service Data JSON", Toast.LENGTH_SHORT).show();
-//                    result = false;
-//                }
-        }
 
         return result;
     }

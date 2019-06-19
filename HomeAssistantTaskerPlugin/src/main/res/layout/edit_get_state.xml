@@ -29,8 +29,13 @@
             android:layout_marginRight="6dip"
             android:layout_marginTop="8dip"/>
 
-        <Spinner
-            android:id="@+id/spn_entity"
+        <AutoCompleteTextView
+            android:id="@+id/atv_entity"
+            android:hint="@string/entity_id_ellipsis"
+            android:completionThreshold="1"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:imeOptions="flagNoExtractUi|actionNext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dip"
@@ -40,6 +45,7 @@
         <EditText
             android:id="@+id/et_variable"
             android:hint="@string/variable"
+            android:imeOptions="flagNoExtractUi"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dip"
