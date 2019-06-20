@@ -1,4 +1,8 @@
 /*
+ * home-assistant-plugin-for-tasker <https://github.com/MarkAdamson/home-assistant-plugin-for-tasker>
+ * Copyright 2019 Mark Adamson
+ *
+ * Original author:
  * android-plugin-client-sdk-for-locale https://github.com/twofortyfouram/android-plugin-client-sdk-for-locale
  * Copyright 2014 two forty four a.m. LLC
  *
