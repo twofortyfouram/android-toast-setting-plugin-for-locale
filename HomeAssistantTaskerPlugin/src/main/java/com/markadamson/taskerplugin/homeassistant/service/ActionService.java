@@ -13,6 +13,7 @@ import com.markadamson.taskerplugin.homeassistant.bundle.GetStatePluginBundleVal
 import com.markadamson.taskerplugin.homeassistant.bundle.PluginBundleValues;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPI;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPIException;
+import com.markadamson.taskerplugin.homeassistant.model.HAEntity;
 import com.markadamson.taskerplugin.homeassistant.model.HAServerStore;
 
 /**
@@ -46,11 +47,16 @@ public class ActionService extends JobIntentService {
                         .callService(service[0], service[1], PluginBundleValues.getData(bundle));
                 TaskerPlugin.Setting.signalFinish(this, intent, TaskerPlugin.Setting.RESULT_CODE_OK, null);
             } else {
-                String entity = GetStatePluginBundleValues.getEntity(bundle);
-                String state = new HAAPI(servers.getServers().get(PluginBundleValues.getServer(bundle)))
-                        .getState(entity);
+                String entityId = GetStatePluginBundleValues.getEntity(bundle);
+                HAEntity entity = new HAAPI(servers.getServers().get(PluginBundleValues.getServer(bundle)))
+                        .getEntity(entityId);
                 Bundle vars = new Bundle();
-                vars.putString(GetStatePluginBundleValues.getVariable(bundle), state);
+                vars.putString(GetStatePluginBundleValues.getStateVariable(bundle), entity.getState());
+
+                String attrsVar = GetStatePluginBundleValues.getAttrsVariable(bundle);
+                if (!attrsVar.isEmpty())
+                    vars.putString(attrsVar, entity.getAttributes());
+
                 TaskerPlugin.Setting.signalFinish(this, intent, TaskerPlugin.Setting.RESULT_CODE_OK, vars);
             }
         } catch (HAAPIException e) {

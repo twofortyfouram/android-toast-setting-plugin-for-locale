@@ -131,7 +131,7 @@ public class HAAPI {
         }
     }
 
-    public String getState(String entityId) throws HAAPIException {
+    public HAEntity getEntity(String entityId) throws HAAPIException {
         try {
             URL url = new URL(mServer.getBaseURL() + "/api/states/" + entityId);
             HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
@@ -143,7 +143,11 @@ public class HAAPI {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             String line = bufferedReader.readLine();
 
-            return new JSONObject(line).getString("state");
+            JSONObject json = new JSONObject(line);
+
+            return new HAEntity(
+                    json.getString("state"),
+                    json.getString("attributes"));
         } catch (IOException e) {
             throw new HAAPIException("Network Error", e);
         } catch (JSONException e) {

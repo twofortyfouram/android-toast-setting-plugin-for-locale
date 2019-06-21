@@ -26,9 +26,10 @@
     <string name="service_data_hint">Service Data (JSON, optional)…</string>
     <string name="call_service">Call Service</string>
     <string name="get_state">Get State</string>
-    <string name="variable">Variable</string>
+    <string name="state_variable">Variable</string>
     <string name="test_entity">Test Entity</string>
     <string name="service_ellipsis">Service…</string>
     <string name="entity_id_ellipsis">Entity ID…</string>
+    <string name="attrs_variable">Attributes (Optional)</string>
 
 </resources>

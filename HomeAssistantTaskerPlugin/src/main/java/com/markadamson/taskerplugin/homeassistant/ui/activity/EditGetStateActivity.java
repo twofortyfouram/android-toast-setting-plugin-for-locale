@@ -32,15 +32,17 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.markadamson.locale.sdk.client.ui.activity.AbstractAppCompatPluginActivity;
 import com.markadamson.taskerplugin.homeassistant.R;
+import com.markadamson.taskerplugin.homeassistant.TaskerPlugin;
 import com.markadamson.taskerplugin.homeassistant.bundle.GetStatePluginBundleValues;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPI;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPIException;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPIResult;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPITask;
+import com.markadamson.taskerplugin.homeassistant.model.HAEntity;
 import com.markadamson.taskerplugin.homeassistant.model.HAServer;
 import com.markadamson.taskerplugin.homeassistant.ui.ServerSelectionUI;
-import com.twofortyfouram.locale.sdk.client.ui.activity.AbstractAppCompatPluginActivity;
 import com.twofortyfouram.log.Lumberjack;
 
 import net.jcip.annotations.NotThreadSafe;
@@ -56,7 +58,7 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
 
     private ArrayAdapter<String> mEntityAdapter;
     private AutoCompleteTextView atvEntity;
-    private EditText etVariable;
+    private EditText etStateVariable, etAttrsVariable;
 
     private abstract static class MyAPITask<Params,Progress,Result> extends HAAPITask<Params,Progress,Result> {
         WeakReference<EditGetStateActivity> activityReference;
@@ -94,19 +96,19 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
         }
     }
 
-    private static class TestEntityTask extends MyAPITask<String,Void,String> {
+    private static class TestEntityTask extends MyAPITask<String,Void,HAEntity> {
 
         TestEntityTask(EditGetStateActivity context, HAServer server) {
             super(context, server);
         }
 
         @Override
-        protected String doAPIInBackground(HAAPI api, String... strings) throws HAAPIException {
-            return api.getState(strings[0]);
+        protected HAEntity doAPIInBackground(HAAPI api, String... strings) throws HAAPIException {
+            return api.getEntity(strings[0]);
         }
 
         @Override
-        protected void onPostExecute(HAAPIResult<String> state) {
+        protected void onPostExecute(HAAPIResult<HAEntity> state) {
             EditGetStateActivity activity = activityReference.get();
             if (activity == null || activity.isFinishing()) return;
 
@@ -116,7 +118,7 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
                 return;
             }
 
-            Toast.makeText(activity, state.getResult(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, state.getResult().getState(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -165,7 +167,8 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
         atvEntity = findViewById(R.id.atv_entity);
         atvEntity.setAdapter(mEntityAdapter);
 
-        etVariable = (EditText) findViewById(R.id.et_variable);
+        etStateVariable = findViewById(R.id.et_state_variable);
+        etAttrsVariable = findViewById(R.id.et_attrs_variable);
 
         findViewById(R.id.btn_test_entity).setOnClickListener(
                 new View.OnClickListener() {
@@ -189,11 +192,14 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
         mServerUI.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void restoreState(UUID id, String entity, String variable) {
+    private void restoreState(UUID id, String entity, String stateVariable, String attrsVariable) {
         mServerUI.setSelection(id);
         atvEntity.setText(entity);
-        etVariable.setText(variable);
+        etStateVariable.setText(stateVariable);
+        etAttrsVariable.setText(attrsVariable);
     }
+
+
 
     @Override
     public void onPostCreateWithPreviousResult(@NonNull final Bundle previousBundle,
@@ -201,7 +207,8 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
         restoreState(
                 GetStatePluginBundleValues.getServer(previousBundle),
                 GetStatePluginBundleValues.getEntity(previousBundle),
-                GetStatePluginBundleValues.getVariable(previousBundle)
+                GetStatePluginBundleValues.getStateVariable(previousBundle),
+                GetStatePluginBundleValues.getAttrsVariable(previousBundle)
         );
     }
 
@@ -215,7 +222,8 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
         return GetStatePluginBundleValues.generateBundle(getApplicationContext(),
                 mServerUI.currentId(),
                 atvEntity.getText().toString(),
-                etVariable.getText().toString());
+                etStateVariable.getText().toString(),
+                etAttrsVariable.getText().toString());
     }
 
     @NonNull
@@ -233,6 +241,16 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
         return message;
     }
 
+    @NonNull
+    @Override
+    public String[] getRelevantVariableList() {
+        ArrayList<String> vars = new ArrayList<>();
+        vars.add(etStateVariable.getText().toString() + "\nEntity State");
+        if (!etAttrsVariable.getText().toString().isEmpty())
+            vars.add(etAttrsVariable.getText().toString() + "\nEntity Attributes");
+        return vars.toArray(new String[vars.size()]);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
@@ -247,6 +265,10 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
             Toast.makeText(this, "Please select a Server", Toast.LENGTH_SHORT).show();
         else if (atvEntity.getText().toString().isEmpty())
             Toast.makeText(this, "Please select an Entity", Toast.LENGTH_SHORT).show();
+        else if (!TaskerPlugin.variableNameValid(etStateVariable.getText().toString()))
+            Toast.makeText(this, "State: Not a valid variable name", Toast.LENGTH_SHORT).show();
+        else if (!(etAttrsVariable.getText().toString().isEmpty() || TaskerPlugin.variableNameValid(etStateVariable.getText().toString())))
+            Toast.makeText(this, "Attributes: Not a valid variable name", Toast.LENGTH_SHORT).show();
         else
             result = true;
 

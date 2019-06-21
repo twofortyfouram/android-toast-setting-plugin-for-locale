@@ -65,11 +65,20 @@ public final class GetStatePluginBundleValues {
     /**
      * Type: {@code String}.
      * <p>
-     * Service data (JSON, optional).
+     * State output variable.
      */
     @NonNull
     public static final String BUNDLE_EXTRA_STRING_VARIABLE
             = "com.markadamson.taskerplugin.homeassistant.extra.STRING_VARIABLE"; //$NON-NLS-1$
+
+    /**
+     * Type: {@code String}.
+     * <p>
+     * Attributes output variable.
+     */
+    @NonNull
+    public static final String BUNDLE_EXTRA_STRING_ATTRS_VARIABLE
+            = "com.markadamson.taskerplugin.homeassistant.extra.STRING_ATTRS_VARIABLE"; //$NON-NLS-1$
 
     /**
      * Type: {@code int}.
@@ -112,6 +121,11 @@ public final class GetStatePluginBundleValues {
             if (bundleVer >= 5 && TaskerPlugin.Setting.hasVariableReplaceKeys(bundle))
                 expectedCount++;
 
+            if (bundleVer >= 6) {
+                BundleAssertions.assertHasString(bundle, BUNDLE_EXTRA_STRING_ATTRS_VARIABLE, false, true);
+                expectedCount++;
+            }
+
             BundleAssertions.assertKeyCount(bundle, expectedCount);
         } catch (final AssertionError e) {
             Lumberjack.e("Bundle failed verification%s", e); //$NON-NLS-1$
@@ -125,14 +139,16 @@ public final class GetStatePluginBundleValues {
      * @param context Application context.
      * @param server The server UUID.
      * @param entity The domain/service to call.
-     * @param variable The service data to send.
+     * @param stateVariable The state output variable.
+     * @param attrsVariable The attributes output variable.
      * @return A plug-in bundle.
      */
     @NonNull
     public static Bundle generateBundle(@NonNull final Context context,
                                         @NonNull final UUID server,
                                         @NonNull final String entity,
-                                        @NonNull final String variable) {
+                                        @NonNull final String stateVariable,
+                                        @NonNull final String attrsVariable) {
         assertNotNull(context, "context"); //$NON-NLS-1$
         assertNotNull(server, "server"); //$NON-NLS-1$
         assertNotEmpty(entity, "service"); //$NON-NLS-1$
@@ -142,7 +158,8 @@ public final class GetStatePluginBundleValues {
         result.putInt(Constants.BUNDLE_EXTRA_BUNDLE_TYPE, Constants.BUNDLE_GET_STATE);
         result.putString(BUNDLE_EXTRA_STRING_SERVER, server.toString());
         result.putString(BUNDLE_EXTRA_STRING_ENTITY, entity);
-        result.putString(BUNDLE_EXTRA_STRING_VARIABLE, variable);
+        result.putString(BUNDLE_EXTRA_STRING_VARIABLE, stateVariable);
+        result.putString(BUNDLE_EXTRA_STRING_ATTRS_VARIABLE, attrsVariable);
         TaskerPlugin.Setting.setVariableReplaceKeys(result, new String[] {BUNDLE_EXTRA_STRING_ENTITY});
 
         return result;
@@ -163,8 +180,13 @@ public final class GetStatePluginBundleValues {
     }
 
     @NonNull
-    public static String getVariable(@NonNull final Bundle bundle) {
+    public static String getStateVariable(@NonNull final Bundle bundle) {
         return bundle.getString(BUNDLE_EXTRA_STRING_VARIABLE);
+    }
+
+    @NonNull
+    public static String getAttrsVariable(@NonNull final Bundle bundle) {
+        return bundle.getString(BUNDLE_EXTRA_STRING_ATTRS_VARIABLE, "");
     }
 
     /**

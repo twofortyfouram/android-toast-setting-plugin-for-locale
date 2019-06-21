@@ -32,7 +32,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.markadamson.locale.sdk.client.ui.activity.AbstractAppCompatPluginActivity;
 import com.markadamson.taskerplugin.homeassistant.R;
+import com.markadamson.taskerplugin.homeassistant.TaskerPlugin;
 import com.markadamson.taskerplugin.homeassistant.bundle.PluginBundleValues;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPI;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPIException;
@@ -40,7 +42,6 @@ import com.markadamson.taskerplugin.homeassistant.model.HAAPIResult;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPITask;
 import com.markadamson.taskerplugin.homeassistant.model.HAServer;
 import com.markadamson.taskerplugin.homeassistant.ui.ServerSelectionUI;
-import com.twofortyfouram.locale.sdk.client.ui.activity.AbstractAppCompatPluginActivity;
 import com.twofortyfouram.log.Lumberjack;
 
 import net.jcip.annotations.NotThreadSafe;
@@ -49,7 +50,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,6 +58,7 @@ import java.util.UUID;
 public final class EditActivity extends AbstractAppCompatPluginActivity {
     private ServerSelectionUI mServerUI;
 
+    private String[] mVariablesFromHost;
     private ArrayAdapter<String> mServiceAdapter;
     private AutoCompleteTextView atvService;
     private EditText etServiceData;
@@ -74,6 +76,7 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
         GetServicesTask(EditActivity activity, HAServer server) {
             super(activity, server);
             activity.mServiceAdapter.clear();
+            activity.mServiceAdapter.addAll(activity.mVariablesFromHost);
         }
 
         @Override
@@ -93,6 +96,7 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
             }
 
             activity.mServiceAdapter.clear();
+            activity.mServiceAdapter.addAll(activity.mVariablesFromHost);
             activity.mServiceAdapter.addAll(services.getResult());
         }
     }
@@ -164,7 +168,8 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
             }
         });
 
-        mServiceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<String>());
+        mVariablesFromHost = TaskerPlugin.getRelevantVariableList(getIntent().getExtras());
+        mServiceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, Arrays.asList(mVariablesFromHost));
 
         atvService = findViewById(R.id.atv_service);
         atvService.setAdapter(mServiceAdapter);
@@ -241,6 +246,12 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
         }
 
         return message;
+    }
+
+    @NonNull
+    @Override
+    public String[] getRelevantVariableList() {
+        return new String[0];
     }
 
     @Override
