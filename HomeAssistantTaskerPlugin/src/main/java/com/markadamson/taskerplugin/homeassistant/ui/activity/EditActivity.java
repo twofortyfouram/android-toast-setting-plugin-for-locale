@@ -50,6 +50,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -169,7 +170,7 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
         });
 
         mVariablesFromHost = TaskerPlugin.getRelevantVariableList(getIntent().getExtras());
-        mServiceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, Arrays.asList(mVariablesFromHost));
+        mServiceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<>(Arrays.asList(mVariablesFromHost)));
 
         atvService = findViewById(R.id.atv_service);
         atvService.setAdapter(mServiceAdapter);
@@ -252,6 +253,11 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
     @Override
     public String[] getRelevantVariableList() {
         return new String[0];
+    }
+
+    @Override
+    public int requestedTimeoutMS() {
+        return 0;
     }
 
     @Override

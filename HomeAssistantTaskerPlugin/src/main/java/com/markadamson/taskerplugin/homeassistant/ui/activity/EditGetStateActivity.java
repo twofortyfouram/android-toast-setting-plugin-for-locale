@@ -49,6 +49,7 @@ import net.jcip.annotations.NotThreadSafe;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -56,6 +57,7 @@ import java.util.UUID;
 public final class EditGetStateActivity extends AbstractAppCompatPluginActivity {
     private ServerSelectionUI mServerUI;
 
+    private String[] mVariablesFromHost;
     private ArrayAdapter<String> mEntityAdapter;
     private AutoCompleteTextView atvEntity;
     private EditText etStateVariable, etAttrsVariable;
@@ -73,6 +75,7 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
         GetEntitiesTask(EditGetStateActivity activity, HAServer server) {
             super(activity, server);
             activity.mEntityAdapter.clear();
+            activity.mEntityAdapter.addAll(activity.mVariablesFromHost);
         }
 
         @Override
@@ -92,6 +95,7 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
             }
 
             activity.mEntityAdapter.clear();
+            activity.mEntityAdapter.addAll(activity.mVariablesFromHost);
             activity.mEntityAdapter.addAll(entities.getResult());
         }
     }
@@ -162,7 +166,8 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
             }
         });
 
-        mEntityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<String>());
+        mVariablesFromHost = TaskerPlugin.getRelevantVariableList(getIntent().getExtras());
+        mEntityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<>(Arrays.asList(mVariablesFromHost)));
 
         atvEntity = findViewById(R.id.atv_entity);
         atvEntity.setAdapter(mEntityAdapter);
@@ -245,10 +250,15 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
     @Override
     public String[] getRelevantVariableList() {
         ArrayList<String> vars = new ArrayList<>();
-        vars.add(etStateVariable.getText().toString() + "\nEntity State");
+        vars.add(String.format("%s\nEntity State\nThe entity state retrieved from %s", etStateVariable.getText().toString(), mServerUI.currentServer().getName()));
         if (!etAttrsVariable.getText().toString().isEmpty())
-            vars.add(etAttrsVariable.getText().toString() + "\nEntity Attributes");
+            vars.add(String.format("%s\nEntity Attributes\nThe entity attributes retrieved from %s", etAttrsVariable.getText().toString(), mServerUI.currentServer().getName()));
         return vars.toArray(new String[vars.size()]);
+    }
+
+    @Override
+    public int requestedTimeoutMS() {
+        return 3000;
     }
 
     @Override

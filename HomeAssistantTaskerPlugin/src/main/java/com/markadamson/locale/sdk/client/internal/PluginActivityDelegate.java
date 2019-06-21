@@ -99,6 +99,8 @@ public final class PluginActivityDelegate<T extends Activity & IPluginActivity> 
                                 blurb);
                         TaskerPlugin.addRelevantVariableList(resultIntent,
                                 activity.getRelevantVariableList());
+                        TaskerPlugin.Setting.requestTimeoutMS(resultIntent,
+                                activity.requestedTimeoutMS());
 
                         activity.setResult(Activity.RESULT_OK, resultIntent);
                     }

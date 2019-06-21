@@ -77,4 +77,6 @@ public interface IPluginActivity {
     @NonNull
     String[] getRelevantVariableList();
 
+    int requestedTimeoutMS();
+
 }
