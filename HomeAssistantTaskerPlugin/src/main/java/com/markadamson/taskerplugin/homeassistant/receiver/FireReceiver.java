@@ -29,6 +29,7 @@ import com.markadamson.taskerplugin.homeassistant.TaskerPlugin;
 import com.markadamson.taskerplugin.homeassistant.bundle.GetStatePluginBundleValues;
 import com.markadamson.taskerplugin.homeassistant.bundle.PluginBundleValues;
 import com.markadamson.taskerplugin.homeassistant.service.ActionService;
+import com.twofortyfouram.log.Lumberjack;
 
 public final class FireReceiver extends AbstractPluginSettingReceiver {
 
@@ -47,9 +48,12 @@ public final class FireReceiver extends AbstractPluginSettingReceiver {
 
     @Override
     protected void firePluginSetting(@NonNull final Context context, @NonNull final Intent intent, @NonNull final Bundle bundle) {
+        Lumberjack.d("FireReceiver.firePluginSetting");
         intent.putExtra(ActionService.EXT_BUNDLE, bundle);
         ActionService.enqueueWork(context, intent);
-        setResultCode(TaskerPlugin.Setting.RESULT_CODE_PENDING);
+        Lumberjack.d("Set result code \" Pending\"");
+        if (isOrderedBroadcast())
+            setResultCode(TaskerPlugin.Setting.RESULT_CODE_PENDING);
     }
 
 
