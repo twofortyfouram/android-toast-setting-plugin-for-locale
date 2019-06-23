@@ -11,6 +11,7 @@ import com.markadamson.taskerplugin.homeassistant.Constants;
 import com.markadamson.taskerplugin.homeassistant.TaskerPlugin;
 import com.markadamson.taskerplugin.homeassistant.bundle.GetStatePluginBundleValues;
 import com.markadamson.taskerplugin.homeassistant.bundle.PluginBundleValues;
+import com.markadamson.taskerplugin.homeassistant.bundle.RenderTemplatePluginBundleValues;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPI;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPIException;
 import com.markadamson.taskerplugin.homeassistant.model.HAEntity;
@@ -52,7 +53,7 @@ public class ActionService extends JobIntentService {
                         .callService(service[0], service[1], PluginBundleValues.getData(bundle));
                 Lumberjack.d("Signalling finish...");
                 TaskerPlugin.Setting.signalFinish(this, intent, TaskerPlugin.Setting.RESULT_CODE_OK, null);
-            } else {
+            } else if (bundle.getInt(Constants.BUNDLE_EXTRA_BUNDLE_TYPE) == Constants.BUNDLE_GET_STATE) {
                 Lumberjack.d("Get State", bundle);
                 String entityId = GetStatePluginBundleValues.getEntity(bundle);
                 Lumberjack.d("Calling api...");
@@ -64,6 +65,17 @@ public class ActionService extends JobIntentService {
                 String attrsVar = GetStatePluginBundleValues.getAttrsVariable(bundle);
                 if (!attrsVar.isEmpty())
                     vars.putString(attrsVar, entity.getAttributes());
+
+                Lumberjack.d("Signalling finish...");
+                TaskerPlugin.Setting.signalFinish(this, intent, TaskerPlugin.Setting.RESULT_CODE_OK, vars);
+            } else {
+                Lumberjack.d("Render Template", bundle);
+                String template = RenderTemplatePluginBundleValues.getTemplate(bundle);
+                Lumberjack.d("Calling api...");
+                String result = new HAAPI(servers.getServers().get(RenderTemplatePluginBundleValues.getServer(bundle)))
+                        .renderTemplate(template);
+                Bundle vars = new Bundle();
+                vars.putString(RenderTemplatePluginBundleValues.getVariable(bundle), result);
 
                 Lumberjack.d("Signalling finish...");
                 TaskerPlugin.Setting.signalFinish(this, intent, TaskerPlugin.Setting.RESULT_CODE_OK, vars);

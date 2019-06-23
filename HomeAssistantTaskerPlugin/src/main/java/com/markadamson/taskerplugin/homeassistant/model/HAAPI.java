@@ -154,4 +154,40 @@ public class HAAPI {
             throw new HAAPIException("JSON Error", e);
         }
     }
+
+    public String renderTemplate(String template) throws HAAPIException {
+        try {
+            URL url = new URL(mServer.getBaseURL() + "/api/template");
+            HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
+            httpConn.setRequestMethod("POST");
+            httpConn.setRequestProperty("Authorization", "Bearer " + mServer.getAccessToken());
+            httpConn.setRequestProperty("Content-Type", "application/json");
+            httpConn.setDoOutput(true);
+
+            JSONObject jsonBody = new JSONObject();
+            jsonBody.put("template", template);
+            byte[] outputBytes = jsonBody.toString().getBytes("UTF-8");
+            OutputStream os = httpConn.getOutputStream();
+            os.write(outputBytes);
+            os.close();
+
+            InputStream inputStream = httpConn.getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            int bsize = 100, i = 0;
+            char[] buffer = new char[bsize];
+            StringBuilder sb = new StringBuilder();
+
+            while (bufferedReader.read(buffer, i* bsize, bsize) == bsize) {
+                sb.append(buffer);
+                i++;
+            }
+            return sb.append(buffer).toString();
+        } catch (IOException e) {
+            throw new HAAPIException("Network Error", e);
+        } catch (JSONException e) {
+            throw new HAAPIException("JSON Error", e);
+        }
+    }
 }

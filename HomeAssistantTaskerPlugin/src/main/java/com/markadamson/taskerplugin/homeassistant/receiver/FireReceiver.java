@@ -28,6 +28,7 @@ import com.markadamson.taskerplugin.homeassistant.Constants;
 import com.markadamson.taskerplugin.homeassistant.TaskerPlugin;
 import com.markadamson.taskerplugin.homeassistant.bundle.GetStatePluginBundleValues;
 import com.markadamson.taskerplugin.homeassistant.bundle.PluginBundleValues;
+import com.markadamson.taskerplugin.homeassistant.bundle.RenderTemplatePluginBundleValues;
 import com.markadamson.taskerplugin.homeassistant.service.ActionService;
 import com.twofortyfouram.log.Lumberjack;
 
@@ -37,8 +38,10 @@ public final class FireReceiver extends AbstractPluginSettingReceiver {
     protected boolean isBundleValid(@NonNull final Bundle bundle) {
         if (bundle.getInt(PluginBundleValues.BUNDLE_EXTRA_INT_VERSION_CODE) < 3 || bundle.getInt(Constants.BUNDLE_EXTRA_BUNDLE_TYPE) == Constants.BUNDLE_CALL_SERVICE)
             return PluginBundleValues.isBundleValid(bundle);
-        else
+        else if (bundle.getInt(Constants.BUNDLE_EXTRA_BUNDLE_TYPE) == Constants.BUNDLE_GET_STATE)
             return GetStatePluginBundleValues.isBundleValid(bundle);
+        else
+            return RenderTemplatePluginBundleValues.isBundleValid(bundle);
     }
 
     @Override

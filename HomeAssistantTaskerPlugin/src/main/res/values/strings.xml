@@ -31,5 +31,9 @@
     <string name="service_ellipsis">Service…</string>
     <string name="entity_id_ellipsis">Entity ID…</string>
     <string name="attrs_variable">Attributes (Optional)</string>
+    <string name="template_ellipsis">Template…</string>
+    <string name="variable">Variable</string>
+    <string name="test_template">Test Template</string>
+    <string name="render_template">Render Template</string>
 
 </resources>

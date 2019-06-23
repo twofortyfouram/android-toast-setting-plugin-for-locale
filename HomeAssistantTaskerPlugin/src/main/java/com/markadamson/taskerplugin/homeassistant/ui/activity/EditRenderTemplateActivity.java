@@ -2,10 +2,6 @@
  * home-assistant-plugin-for-tasker <https://github.com/MarkAdamson/home-assistant-plugin-for-tasker>
  * Copyright 2019 Mark Adamson
  *
- * Original author:
- * android-toast-setting-plugin-for-locale <https://github.com/twofortyfouram/android-toast-setting-plugin-for-locale>
- * Copyright 2014 two forty four a.m. LLC
- *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  *
@@ -28,101 +24,100 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.markadamson.locale.sdk.client.ui.activity.AbstractAppCompatPluginActivity;
 import com.markadamson.taskerplugin.homeassistant.R;
 import com.markadamson.taskerplugin.homeassistant.TaskerPlugin;
-import com.markadamson.taskerplugin.homeassistant.bundle.GetStatePluginBundleValues;
+import com.markadamson.taskerplugin.homeassistant.bundle.RenderTemplatePluginBundleValues;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPI;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPIException;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPIResult;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPITask;
-import com.markadamson.taskerplugin.homeassistant.model.HAEntity;
 import com.markadamson.taskerplugin.homeassistant.model.HAServer;
 import com.markadamson.taskerplugin.homeassistant.ui.ServerSelectionUI;
 import com.twofortyfouram.log.Lumberjack;
 
 import net.jcip.annotations.NotThreadSafe;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 @NotThreadSafe
-public final class EditGetStateActivity extends AbstractAppCompatPluginActivity {
+public final class EditRenderTemplateActivity extends AbstractAppCompatPluginActivity {
     private ServerSelectionUI mServerUI;
 
-    private String[] mVariablesFromHost;
-    private ArrayAdapter<String> mEntityAdapter;
-    private AutoCompleteTextView atvEntity;
-    private EditText etStateVariable, etAttrsVariable;
+//    private String[] mVariablesFromHost;
+//    private ArrayAdapter<String> mServiceAdapter;
+    private EditText etTemplate, etVariable;
 
     private abstract static class MyAPITask<Params,Progress,Result> extends HAAPITask<Params,Progress,Result> {
-        WeakReference<EditGetStateActivity> activityReference;
+        WeakReference<EditRenderTemplateActivity> activityReference;
 
-        MyAPITask(EditGetStateActivity context, HAServer server) {
+        MyAPITask(EditRenderTemplateActivity activity, HAServer server) {
             super(server);
-            activityReference = new WeakReference<>(context);
+            activityReference = new WeakReference<>(activity);
         }
     }
 
-    private static class GetEntitiesTask extends MyAPITask<Void,Void,List<String>> {
-        GetEntitiesTask(EditGetStateActivity activity, HAServer server) {
-            super(activity, server);
-            activity.mEntityAdapter.clear();
-            activity.mEntityAdapter.addAll(activity.mVariablesFromHost);
-        }
+//    private static class GetServicesTask extends MyAPITask<Void,Void,List<String>> {
+//        GetServicesTask(EditRenderTemplateActivity activity, HAServer server) {
+//            super(activity, server);
+//            activity.mServiceAdapter.clear();
+//            activity.mServiceAdapter.addAll(activity.mVariablesFromHost);
+//        }
+//
+//        @Override
+//        protected List<String> doAPIInBackground(HAAPI api, Void... voids) throws HAAPIException {
+//            return api.getServices();
+//        }
+//
+//        @Override
+//        protected void onPostExecute(HAAPIResult<List<String>> services) {
+//            EditRenderTemplateActivity activity = activityReference.get();
+//            if (activity == null || activity.isFinishing()) return;
+//
+//            if (services.getException() != null) {
+//                services.getException().printStackTrace();
+//                Toast.makeText(activity, services.getException().getMessage(), Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//
+//            activity.mServiceAdapter.clear();
+//            activity.mServiceAdapter.addAll(activity.mVariablesFromHost);
+//            activity.mServiceAdapter.addAll(services.getResult());
+//        }
+//    }
 
-        @Override
-        protected List<String> doAPIInBackground(HAAPI api, Void... voids) throws HAAPIException {
-            return api.getEntities();
-        }
+    private static class TestTemplateTask extends MyAPITask<String,Void,String> {
 
-        @Override
-        protected void onPostExecute(HAAPIResult<List<String>> entities) {
-            EditGetStateActivity activity = activityReference.get();
-            if (activity == null || activity.isFinishing()) return;
-
-            if (entities.getException() != null) {
-                entities.getException().printStackTrace();
-                Toast.makeText(activity, entities.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            activity.mEntityAdapter.clear();
-            activity.mEntityAdapter.addAll(activity.mVariablesFromHost);
-            activity.mEntityAdapter.addAll(entities.getResult());
-        }
-    }
-
-    private static class TestEntityTask extends MyAPITask<String,Void,HAEntity> {
-
-        TestEntityTask(EditGetStateActivity context, HAServer server) {
+        TestTemplateTask(EditRenderTemplateActivity context, HAServer server) {
             super(context, server);
         }
 
         @Override
-        protected HAEntity doAPIInBackground(HAAPI api, String... strings) throws HAAPIException {
-            return api.getEntity(strings[0]);
+        protected String doAPIInBackground(HAAPI api, String... strings) throws HAAPIException {
+            return api.renderTemplate(strings[0]);
         }
 
         @Override
-        protected void onPostExecute(HAAPIResult<HAEntity> state) {
-            EditGetStateActivity activity = activityReference.get();
+        protected void onPostExecute(HAAPIResult<String> result) {
+            EditRenderTemplateActivity activity = activityReference.get();
             if (activity == null || activity.isFinishing()) return;
 
-            if (state.getException() != null) {
-                state.getException().printStackTrace();
-                Toast.makeText(activity, state.getException().getMessage(), Toast.LENGTH_SHORT).show();
+            if (result.getException() != null) {
+                result.getException().printStackTrace();
+                Toast.makeText(activity, result.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            Toast.makeText(activity, state.getResult().getState(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, result.getResult(), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -130,7 +125,7 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.edit_get_state);
+        setContentView(R.layout.edit_render_template);
 
         /*
          * To help the user keep context, the title shows the host's name and the subtitle
@@ -150,42 +145,47 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
         }
 
         Resources r = getResources();
-        getSupportActionBar().setSubtitle(r.getString(R.string.activity_subtitle, r.getString(R.string.get_state)));
+        getSupportActionBar().setSubtitle(r.getString(R.string.activity_subtitle, r.getString(R.string.render_template)));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mServerUI = new ServerSelectionUI(this, callingApplicationLabel, new ServerSelectionUI.OnServerSelectedListener() {
             @Override
             public void onServerSelected(HAServer server) {
-                new GetEntitiesTask(EditGetStateActivity.this, server).execute();
+//                new GetServicesTask(EditRenderTemplateActivity.this, server).execute();
             }
 
             @Override
             public void onNothingSelected() {
-                mEntityAdapter.clear();
+//                mServiceAdapter.clear();
             }
         });
 
-        mVariablesFromHost = TaskerPlugin.getRelevantVariableList(getIntent().getExtras());
-        mEntityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<>(Arrays.asList(mVariablesFromHost)));
+//        mVariablesFromHost = TaskerPlugin.getRelevantVariableList(getIntent().getExtras());
+//        mServiceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<>(Arrays.asList(mVariablesFromHost)));
 
-        atvEntity = findViewById(R.id.atv_entity);
-        atvEntity.setAdapter(mEntityAdapter);
+        etTemplate = findViewById(R.id.et_template);
+//        etTemplate.setAdapter(mServiceAdapter);
 
-        etStateVariable = findViewById(R.id.et_state_variable);
-        etAttrsVariable = findViewById(R.id.et_attrs_variable);
+        etVariable = findViewById(R.id.et_variable);
 
-        findViewById(R.id.btn_test_entity).setOnClickListener(
+        findViewById(R.id.btn_test_template).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (atvEntity.getText().toString().contains("%")) {
-                            Toast.makeText(EditGetStateActivity.this, "Cannot test using variables in entity id!", Toast.LENGTH_SHORT).show();
+                        if (etTemplate.getText().toString().contains("%")) {
+                            Toast.makeText(EditRenderTemplateActivity.this, "Cannot test using variables!", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
-                        new TestEntityTask(EditGetStateActivity.this, mServerUI.currentServer())
-                                .execute(atvEntity.getText().toString());
+//                        String[] service = etTemplate.getText().toString().split("\\.");
+//                        if (service.length != 2) {
+//                            Toast.makeText(EditRenderTemplateActivity.this, "Invalid service!", Toast.LENGTH_SHORT).show();
+//                            return;
+//                        }
+
+                        new TestTemplateTask(EditRenderTemplateActivity.this, mServerUI.currentServer())
+                                .execute(etTemplate.getText().toString());
                     }
                 }
         );
@@ -197,44 +197,39 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
         mServerUI.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void restoreState(UUID id, String entity, String stateVariable, String attrsVariable) {
+    private void restoreState(UUID id, String template, String variable) {
         mServerUI.setSelection(id);
-        atvEntity.setText(entity);
-        etStateVariable.setText(stateVariable);
-        etAttrsVariable.setText(attrsVariable);
+        etTemplate.setText(template);
+        etVariable.setText(variable);
     }
-
-
 
     @Override
     public void onPostCreateWithPreviousResult(@NonNull final Bundle previousBundle,
                                                @NonNull final String previousBlurb) {
         restoreState(
-                GetStatePluginBundleValues.getServer(previousBundle),
-                GetStatePluginBundleValues.getEntity(previousBundle),
-                GetStatePluginBundleValues.getStateVariable(previousBundle),
-                GetStatePluginBundleValues.getAttrsVariable(previousBundle)
+                RenderTemplatePluginBundleValues.getServer(previousBundle),
+                RenderTemplatePluginBundleValues.getTemplate(previousBundle),
+                RenderTemplatePluginBundleValues.getVariable(previousBundle)
         );
     }
 
     @Override
     public boolean isBundleValid(@NonNull final Bundle bundle) {
-        return GetStatePluginBundleValues.isBundleValid(bundle);
+        return RenderTemplatePluginBundleValues.isBundleValid(bundle);
     }
 
     @Override
     public Bundle getResultBundle() {
-        return GetStatePluginBundleValues.generateBundle(getApplicationContext(),
+        return RenderTemplatePluginBundleValues.generateBundle(getApplicationContext(),
                 mServerUI.currentId(),
-                atvEntity.getText().toString(),
-                etStateVariable.getText().toString(),
-                etAttrsVariable.getText().toString());
+                etTemplate.getText().toString(),
+                etVariable.getText().toString());
     }
 
     @NonNull
     @Override
     public String getResultBlurb(@NonNull final Bundle bundle) {
-        final String message = GetStatePluginBundleValues.getEntity(bundle);
+        final String message = RenderTemplatePluginBundleValues.getTemplate(bundle);
 
         final int maxBlurbLength = getResources().getInteger(
                 R.integer.com_twofortyfouram_locale_sdk_client_maximum_blurb_length);
@@ -249,11 +244,7 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
     @NonNull
     @Override
     public String[] getRelevantVariableList() {
-        ArrayList<String> vars = new ArrayList<>();
-        vars.add(String.format("%s\nEntity State\nThe entity state retrieved from %s", etStateVariable.getText().toString(), mServerUI.currentServer().getName()));
-        if (!etAttrsVariable.getText().toString().isEmpty())
-            vars.add(String.format("%s\nEntity Attributes\nThe entity attributes retrieved from %s", etAttrsVariable.getText().toString(), mServerUI.currentServer().getName()));
-        return vars.toArray(new String[vars.size()]);
+        return new String[] {String.format("%s\nRendered Template\nThe rendered template from %s", etVariable.getText().toString(), mServerUI.currentServer().getName())};
     }
 
     @Override
@@ -273,12 +264,8 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
 
         if (mServerUI.serverCount() == 0)
             Toast.makeText(this, "Please select a Server", Toast.LENGTH_SHORT).show();
-        else if (atvEntity.getText().toString().isEmpty())
-            Toast.makeText(this, "Please select an Entity", Toast.LENGTH_SHORT).show();
-        else if (!TaskerPlugin.variableNameValid(etStateVariable.getText().toString()))
-            Toast.makeText(this, "State: Not a valid variable name", Toast.LENGTH_SHORT).show();
-        else if (!(etAttrsVariable.getText().toString().isEmpty() || TaskerPlugin.variableNameValid(etStateVariable.getText().toString())))
-            Toast.makeText(this, "Attributes: Not a valid variable name", Toast.LENGTH_SHORT).show();
+        else if (!TaskerPlugin.variableNameValid(etVariable.getText().toString()))
+            Toast.makeText(this, "Not a valid variable name", Toast.LENGTH_SHORT).show();
         else
             result = true;
 
