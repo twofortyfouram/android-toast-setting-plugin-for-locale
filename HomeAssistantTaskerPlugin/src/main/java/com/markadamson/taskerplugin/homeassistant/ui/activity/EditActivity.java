@@ -243,7 +243,7 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
                 R.integer.com_twofortyfouram_locale_sdk_client_maximum_blurb_length);
 
         if (message.length() > maxBlurbLength) {
-            return message.substring(0, maxBlurbLength);
+            return message.substring(0, maxBlurbLength - 1).concat("…");
         }
 
         return message;

@@ -53,8 +53,7 @@ import java.util.UUID;
 public final class EditRenderTemplateActivity extends AbstractAppCompatPluginActivity {
     private ServerSelectionUI mServerUI;
 
-//    private String[] mVariablesFromHost;
-//    private ArrayAdapter<String> mServiceAdapter;
+    private String[] mVariablesFromHost;
     private EditText etTemplate, etVariable;
 
     private abstract static class MyAPITask<Params,Progress,Result> extends HAAPITask<Params,Progress,Result> {
@@ -65,35 +64,6 @@ public final class EditRenderTemplateActivity extends AbstractAppCompatPluginAct
             activityReference = new WeakReference<>(activity);
         }
     }
-
-//    private static class GetServicesTask extends MyAPITask<Void,Void,List<String>> {
-//        GetServicesTask(EditRenderTemplateActivity activity, HAServer server) {
-//            super(activity, server);
-//            activity.mServiceAdapter.clear();
-//            activity.mServiceAdapter.addAll(activity.mVariablesFromHost);
-//        }
-//
-//        @Override
-//        protected List<String> doAPIInBackground(HAAPI api, Void... voids) throws HAAPIException {
-//            return api.getServices();
-//        }
-//
-//        @Override
-//        protected void onPostExecute(HAAPIResult<List<String>> services) {
-//            EditRenderTemplateActivity activity = activityReference.get();
-//            if (activity == null || activity.isFinishing()) return;
-//
-//            if (services.getException() != null) {
-//                services.getException().printStackTrace();
-//                Toast.makeText(activity, services.getException().getMessage(), Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//
-//            activity.mServiceAdapter.clear();
-//            activity.mServiceAdapter.addAll(activity.mVariablesFromHost);
-//            activity.mServiceAdapter.addAll(services.getResult());
-//        }
-//    }
 
     private static class TestTemplateTask extends MyAPITask<String,Void,String> {
 
@@ -152,20 +122,16 @@ public final class EditRenderTemplateActivity extends AbstractAppCompatPluginAct
         mServerUI = new ServerSelectionUI(this, callingApplicationLabel, new ServerSelectionUI.OnServerSelectedListener() {
             @Override
             public void onServerSelected(HAServer server) {
-//                new GetServicesTask(EditRenderTemplateActivity.this, server).execute();
             }
 
             @Override
             public void onNothingSelected() {
-//                mServiceAdapter.clear();
             }
         });
 
-//        mVariablesFromHost = TaskerPlugin.getRelevantVariableList(getIntent().getExtras());
-//        mServiceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<>(Arrays.asList(mVariablesFromHost)));
+        mVariablesFromHost = TaskerPlugin.getRelevantVariableList(getIntent().getExtras());
 
         etTemplate = findViewById(R.id.et_template);
-//        etTemplate.setAdapter(mServiceAdapter);
 
         etVariable = findViewById(R.id.et_variable);
 
@@ -177,12 +143,6 @@ public final class EditRenderTemplateActivity extends AbstractAppCompatPluginAct
                             Toast.makeText(EditRenderTemplateActivity.this, "Cannot test using variables!", Toast.LENGTH_SHORT).show();
                             return;
                         }
-
-//                        String[] service = etTemplate.getText().toString().split("\\.");
-//                        if (service.length != 2) {
-//                            Toast.makeText(EditRenderTemplateActivity.this, "Invalid service!", Toast.LENGTH_SHORT).show();
-//                            return;
-//                        }
 
                         new TestTemplateTask(EditRenderTemplateActivity.this, mServerUI.currentServer())
                                 .execute(etTemplate.getText().toString());
@@ -235,7 +195,7 @@ public final class EditRenderTemplateActivity extends AbstractAppCompatPluginAct
                 R.integer.com_twofortyfouram_locale_sdk_client_maximum_blurb_length);
 
         if (message.length() > maxBlurbLength) {
-            return message.substring(0, maxBlurbLength);
+            return message.substring(0, maxBlurbLength - 1).concat("…");
         }
 
         return message;

@@ -24,9 +24,10 @@ public class HAAPI {
     }
 
     public boolean testServer() throws HAAPIException {
+        HttpURLConnection httpConn = null;
         try {
             URL url = new URL(mServer.getBaseURL() + "/api/");
-            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+            httpConn = (HttpURLConnection) url.openConnection();
             httpConn.setRequestMethod("GET");
             httpConn.setRequestProperty("Authorization", "Bearer " + mServer.getAccessToken());
 
@@ -38,16 +39,24 @@ public class HAAPI {
             JSONObject apiResult = new JSONObject(line);
             return apiResult.has("message") && "API running.".equals(apiResult.getString("message"));
         } catch (IOException e) {
-            throw new HAAPIException("Network Error", e);
+            if (httpConn != null)
+                try {
+                    throw new HAAPIException("Network Error: ".concat(httpConn.getResponseMessage()), e);
+                } catch (IOException e1) {
+                    throw new HAAPIException("Network Error", e);
+                }
+            else
+                throw new HAAPIException("IO Error", e);
         } catch (JSONException e) {
             throw new HAAPIException("JSON Error", e);
         }
     }
 
     public List<String> getServices() throws HAAPIException {
+        HttpURLConnection httpConn = null;
         try {
             URL url = new URL(mServer.getBaseURL() + "/api/services");
-            HttpURLConnection httpConn = (HttpURLConnection) url.openConnection();
+            httpConn = (HttpURLConnection) url.openConnection();
             httpConn.setRequestMethod("GET");
             httpConn.setRequestProperty("Authorization", "Bearer " + mServer.getAccessToken());
 
@@ -71,16 +80,24 @@ public class HAAPI {
             Collections.sort(result);
             return result;
         } catch (IOException e) {
-            throw new HAAPIException("Network Error", e);
+            if (httpConn != null)
+                try {
+                    throw new HAAPIException("Network Error: ".concat(httpConn.getResponseMessage()), e);
+                } catch (IOException e1) {
+                    throw new HAAPIException("Network Error", e);
+                }
+            else
+                throw new HAAPIException("IO Error", e);
         } catch (JSONException e) {
             throw new HAAPIException("JSON Error", e);
         }
     }
 
     public void callService(String domain, String service, String data) throws HAAPIException {
+        HttpURLConnection httpConn = null;
         try {
             URL url = new URL(mServer.getBaseURL() + "/api/services/" + domain + "/" + service);
-            HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
+            httpConn = (HttpURLConnection)url.openConnection();
             httpConn.setRequestMethod("POST");
             httpConn.setRequestProperty("Authorization", "Bearer " + mServer.getAccessToken());
             httpConn.setRequestProperty("Content-Type", "application/json");
@@ -99,16 +116,24 @@ public class HAAPI {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             bufferedReader.readLine();
         } catch (IOException e) {
-            throw new HAAPIException("Network Error", e);
+            if (httpConn != null)
+                try {
+                    throw new HAAPIException("Network Error: ".concat(httpConn.getResponseMessage()), e);
+                } catch (IOException e1) {
+                    throw new HAAPIException("Network Error", e);
+                }
+            else
+                throw new HAAPIException("IO Error", e);
         } catch (JSONException e) {
             throw new HAAPIException("JSON Error", e);
         }
     }
 
     public List<String> getEntities() throws HAAPIException {
+        HttpURLConnection httpConn = null;
         try {
             URL url = new URL(mServer.getBaseURL() + "/api/states");
-            HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
+            httpConn = (HttpURLConnection)url.openConnection();
             httpConn.setRequestMethod("GET");
             httpConn.setRequestProperty("Authorization", "Bearer " + mServer.getAccessToken());
 
@@ -125,16 +150,24 @@ public class HAAPI {
             Collections.sort(result);
             return result;
         } catch (IOException e) {
-            throw new HAAPIException("Network Error", e);
+            if (httpConn != null)
+                try {
+                    throw new HAAPIException("Network Error: ".concat(httpConn.getResponseMessage()), e);
+                } catch (IOException e1) {
+                    throw new HAAPIException("Network Error", e);
+                }
+            else
+                throw new HAAPIException("IO Error", e);
         } catch (JSONException e) {
             throw new HAAPIException("JSON Error", e);
         }
     }
 
     public HAEntity getEntity(String entityId) throws HAAPIException {
+        HttpURLConnection httpConn = null;
         try {
             URL url = new URL(mServer.getBaseURL() + "/api/states/" + entityId);
-            HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
+            httpConn = (HttpURLConnection)url.openConnection();
             httpConn.setRequestMethod("GET");
             httpConn.setRequestProperty("Authorization", "Bearer " + mServer.getAccessToken());
 
@@ -149,16 +182,24 @@ public class HAAPI {
                     json.getString("state"),
                     json.getString("attributes"));
         } catch (IOException e) {
-            throw new HAAPIException("Network Error", e);
+            if (httpConn != null)
+                try {
+                    throw new HAAPIException("Network Error: ".concat(httpConn.getResponseMessage()), e);
+                } catch (IOException e1) {
+                    throw new HAAPIException("Network Error", e);
+                }
+            else
+                throw new HAAPIException("IO Error", e);
         } catch (JSONException e) {
             throw new HAAPIException("JSON Error", e);
         }
     }
 
     public String renderTemplate(String template) throws HAAPIException {
+        HttpURLConnection httpConn = null;
         try {
             URL url = new URL(mServer.getBaseURL() + "/api/template");
-            HttpURLConnection httpConn = (HttpURLConnection)url.openConnection();
+            httpConn = (HttpURLConnection)url.openConnection();
             httpConn.setRequestMethod("POST");
             httpConn.setRequestProperty("Authorization", "Bearer " + mServer.getAccessToken());
             httpConn.setRequestProperty("Content-Type", "application/json");
@@ -175,17 +216,22 @@ public class HAAPI {
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-            int bsize = 100, i = 0;
+            int bsize = 100;
             char[] buffer = new char[bsize];
             StringBuilder sb = new StringBuilder();
 
-            while (bufferedReader.read(buffer, i* bsize, bsize) == bsize) {
+            while (bufferedReader.read(buffer, 0, bsize) != -1)
                 sb.append(buffer);
-                i++;
-            }
-            return sb.append(buffer).toString();
+            return sb.toString();
         } catch (IOException e) {
-            throw new HAAPIException("Network Error", e);
+            if (httpConn != null)
+                try {
+                    throw new HAAPIException("Network Error: ".concat(httpConn.getResponseMessage()), e);
+                } catch (IOException e1) {
+                    throw new HAAPIException("Network Error", e);
+                }
+            else
+                throw new HAAPIException("IO Error", e);
         } catch (JSONException e) {
             throw new HAAPIException("JSON Error", e);
         }
