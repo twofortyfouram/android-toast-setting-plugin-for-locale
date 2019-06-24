@@ -5,6 +5,7 @@ syntax: glob
 .settings
 .idea
 *.iml
+*.apk
 bin/
 build/
 gen/
