@@ -19,7 +19,7 @@
         android:layout_marginLeft="2dip"
         android:layout_marginStart="2dip"
         android:contentDescription="@string/add_a_server"
-        android:src="@drawable/baseline_add_black_18" />
+        android:src="@drawable/baseline_add_white_18" />
 
     <ImageButton
         android:id="@+id/btn_edit_server"
@@ -28,7 +28,7 @@
         android:layout_marginLeft="2dip"
         android:layout_marginStart="2dip"
         android:contentDescription="@string/edit_server"
-        android:src="@drawable/baseline_edit_black_18" />
+        android:src="@drawable/baseline_edit_white_18" />
 
     <ImageButton
         android:id="@+id/btn_delete_server"
@@ -37,6 +37,6 @@
         android:layout_marginLeft="2dip"
         android:layout_marginStart="2dip"
         android:contentDescription="@string/delete_server"
-        android:src="@drawable/baseline_delete_black_18" />
+        android:src="@drawable/baseline_delete_white_18" />
 
 </LinearLayout>
