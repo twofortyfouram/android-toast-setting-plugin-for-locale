@@ -29,25 +29,61 @@
             android:layout_marginRight="6dip"
             android:layout_marginTop="8dip"/>
 
-        <EditText
-            android:id="@+id/et_template"
-            android:hint="@string/template_ellipsis"
-            android:imeOptions="flagNoExtractUi|actionNext"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:layout_marginLeft="6dip"
             android:layout_marginRight="6dip"
-            android:layout_marginTop="8dip"/>
+            android:layout_marginTop="8dip">
 
-        <EditText
-            android:id="@+id/et_variable"
-            android:hint="@string/variable"
-            android:imeOptions="flagNoExtractUi"
+            <EditText
+                android:id="@+id/et_template"
+                android:hint="@string/template"
+                android:imeOptions="flagNoExtractUi|actionNext"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/btn_template_variable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dip"
+                android:layout_marginStart="2dip"
+                android:contentDescription="@string/select_variable"
+                android:src="@drawable/outline_label_white_18" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:layout_marginLeft="6dip"
             android:layout_marginRight="6dip"
-            android:layout_marginTop="8dip" />
+            android:layout_marginTop="8dip">
+
+            <EditText
+                android:id="@+id/et_variable"
+                android:hint="@string/variable"
+                android:imeOptions="flagNoExtractUi"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/btn_variable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dip"
+                android:layout_marginStart="2dip"
+                android:contentDescription="@string/select_variable"
+                android:src="@drawable/outline_label_white_18" />
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/btn_test_template"

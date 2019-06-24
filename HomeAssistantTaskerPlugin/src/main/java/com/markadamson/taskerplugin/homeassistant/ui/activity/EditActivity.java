@@ -42,6 +42,7 @@ import com.markadamson.taskerplugin.homeassistant.model.HAAPIResult;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPITask;
 import com.markadamson.taskerplugin.homeassistant.model.HAServer;
 import com.markadamson.taskerplugin.homeassistant.ui.ServerSelectionUI;
+import com.markadamson.taskerplugin.homeassistant.ui.VariableSelectUI;
 import com.twofortyfouram.log.Lumberjack;
 
 import net.jcip.annotations.NotThreadSafe;
@@ -51,7 +52,6 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,7 +59,6 @@ import java.util.UUID;
 public final class EditActivity extends AbstractAppCompatPluginActivity {
     private ServerSelectionUI mServerUI;
 
-    private String[] mVariablesFromHost;
     private ArrayAdapter<String> mServiceAdapter;
     private AutoCompleteTextView atvService;
     private EditText etServiceData;
@@ -77,7 +76,6 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
         GetServicesTask(EditActivity activity, HAServer server) {
             super(activity, server);
             activity.mServiceAdapter.clear();
-            activity.mServiceAdapter.addAll(activity.mVariablesFromHost);
         }
 
         @Override
@@ -97,7 +95,6 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
             }
 
             activity.mServiceAdapter.clear();
-            activity.mServiceAdapter.addAll(activity.mVariablesFromHost);
             activity.mServiceAdapter.addAll(services.getResult());
         }
     }
@@ -169,13 +166,16 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
             }
         });
 
-        mVariablesFromHost = TaskerPlugin.getRelevantVariableList(getIntent().getExtras());
-        mServiceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<>(Arrays.asList(mVariablesFromHost)));
 
+        String[] variablesFromHost = TaskerPlugin.getRelevantVariableList(getIntent().getExtras());
+
+        mServiceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<String>());
         atvService = findViewById(R.id.atv_service);
         atvService.setAdapter(mServiceAdapter);
+        VariableSelectUI.init(variablesFromHost, findViewById(R.id.btn_service_variable), atvService);
 
         etServiceData = findViewById(R.id.et_service_data);
+        VariableSelectUI.init(variablesFromHost, findViewById(R.id.btn_service_data_variable), etServiceData);
 
         findViewById(R.id.btn_test_service).setOnClickListener(
                 new View.OnClickListener() {

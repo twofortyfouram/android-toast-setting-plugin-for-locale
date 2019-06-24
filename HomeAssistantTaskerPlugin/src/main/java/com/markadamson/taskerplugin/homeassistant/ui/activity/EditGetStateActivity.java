@@ -43,13 +43,13 @@ import com.markadamson.taskerplugin.homeassistant.model.HAAPITask;
 import com.markadamson.taskerplugin.homeassistant.model.HAEntity;
 import com.markadamson.taskerplugin.homeassistant.model.HAServer;
 import com.markadamson.taskerplugin.homeassistant.ui.ServerSelectionUI;
+import com.markadamson.taskerplugin.homeassistant.ui.VariableSelectUI;
 import com.twofortyfouram.log.Lumberjack;
 
 import net.jcip.annotations.NotThreadSafe;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,7 +57,6 @@ import java.util.UUID;
 public final class EditGetStateActivity extends AbstractAppCompatPluginActivity {
     private ServerSelectionUI mServerUI;
 
-    private String[] mVariablesFromHost;
     private ArrayAdapter<String> mEntityAdapter;
     private AutoCompleteTextView atvEntity;
     private EditText etStateVariable, etAttrsVariable;
@@ -75,7 +74,6 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
         GetEntitiesTask(EditGetStateActivity activity, HAServer server) {
             super(activity, server);
             activity.mEntityAdapter.clear();
-            activity.mEntityAdapter.addAll(activity.mVariablesFromHost);
         }
 
         @Override
@@ -95,7 +93,6 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
             }
 
             activity.mEntityAdapter.clear();
-            activity.mEntityAdapter.addAll(activity.mVariablesFromHost);
             activity.mEntityAdapter.addAll(entities.getResult());
         }
     }
@@ -166,14 +163,18 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
             }
         });
 
-        mVariablesFromHost = TaskerPlugin.getRelevantVariableList(getIntent().getExtras());
-        mEntityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<>(Arrays.asList(mVariablesFromHost)));
+        String[] variablesFromHost = TaskerPlugin.getRelevantVariableList(getIntent().getExtras());
 
+        mEntityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<String>());
         atvEntity = findViewById(R.id.atv_entity);
         atvEntity.setAdapter(mEntityAdapter);
+        VariableSelectUI.init(variablesFromHost, findViewById(R.id.btn_entity_variable), atvEntity);
 
         etStateVariable = findViewById(R.id.et_state_variable);
+        VariableSelectUI.init(variablesFromHost, findViewById(R.id.btn_state_variable), etStateVariable);
+
         etAttrsVariable = findViewById(R.id.et_attrs_variable);
+        VariableSelectUI.init(variablesFromHost, findViewById(R.id.btn_attrs_variable), etAttrsVariable);
 
         findViewById(R.id.btn_test_entity).setOnClickListener(
                 new View.OnClickListener() {

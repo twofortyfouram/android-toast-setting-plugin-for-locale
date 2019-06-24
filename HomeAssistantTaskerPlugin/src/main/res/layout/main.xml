@@ -21,7 +21,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical" >
 
         <include
@@ -32,27 +32,63 @@
             android:layout_marginRight="6dip"
             android:layout_marginTop="8dip"/>
 
-        <AutoCompleteTextView
-            android:id="@+id/atv_service"
-            android:hint="@string/service_ellipsis"
-            android:completionThreshold="1"
-            android:singleLine="true"
-            android:maxLines="1"
-            android:imeOptions="flagNoExtractUi|actionNext"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:layout_marginLeft="6dip"
             android:layout_marginRight="6dip"
-            android:layout_marginTop="8dip"/>
+            android:layout_marginTop="8dip">
 
-        <EditText
-            android:id="@+id/et_service_data"
-            android:hint="@string/service_data_hint"
+            <AutoCompleteTextView
+                android:id="@+id/atv_service"
+                android:hint="@string/service"
+                android:completionThreshold="1"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:imeOptions="flagNoExtractUi|actionNext"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/btn_service_variable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dip"
+                android:layout_marginStart="2dip"
+                android:contentDescription="@string/select_variable"
+                android:src="@drawable/outline_label_white_18" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:layout_marginLeft="6dip"
             android:layout_marginRight="6dip"
-            android:layout_marginTop="8dip" />
+            android:layout_marginTop="8dip">
+
+            <EditText
+                android:id="@+id/et_service_data"
+                android:hint="@string/service_data_hint"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/btn_service_data_variable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dip"
+                android:layout_marginStart="2dip"
+                android:contentDescription="@string/select_variable"
+                android:src="@drawable/outline_label_white_18" />
+
+        </LinearLayout>
 
         <Button
             android:id="@+id/btn_test_service"

@@ -23,7 +23,6 @@ import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -37,23 +36,18 @@ import com.markadamson.taskerplugin.homeassistant.model.HAAPIResult;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPITask;
 import com.markadamson.taskerplugin.homeassistant.model.HAServer;
 import com.markadamson.taskerplugin.homeassistant.ui.ServerSelectionUI;
+import com.markadamson.taskerplugin.homeassistant.ui.VariableSelectUI;
 import com.twofortyfouram.log.Lumberjack;
 
 import net.jcip.annotations.NotThreadSafe;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.UUID;
 
 @NotThreadSafe
 public final class EditRenderTemplateActivity extends AbstractAppCompatPluginActivity {
     private ServerSelectionUI mServerUI;
 
-    private String[] mVariablesFromHost;
     private EditText etTemplate, etVariable;
 
     private abstract static class MyAPITask<Params,Progress,Result> extends HAAPITask<Params,Progress,Result> {
@@ -129,11 +123,13 @@ public final class EditRenderTemplateActivity extends AbstractAppCompatPluginAct
             }
         });
 
-        mVariablesFromHost = TaskerPlugin.getRelevantVariableList(getIntent().getExtras());
+        String[] variablesFromHost = TaskerPlugin.getRelevantVariableList(getIntent().getExtras());
 
         etTemplate = findViewById(R.id.et_template);
+        VariableSelectUI.init(variablesFromHost, findViewById(R.id.btn_template_variable), etTemplate);
 
         etVariable = findViewById(R.id.et_variable);
+        VariableSelectUI.init(variablesFromHost, findViewById(R.id.btn_variable), etVariable);
 
         findViewById(R.id.btn_test_template).setOnClickListener(
                 new View.OnClickListener() {
