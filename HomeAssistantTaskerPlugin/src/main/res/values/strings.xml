@@ -43,5 +43,11 @@
         recommended that you change the battery optimization setting for the plug-in to \'Don\'t
         Optimize\'.\n\nWould you like to go to settings to change this now?
     </string>
+    <string name="are_you_sure">Are You Sure?</string>
+    <string name="delete_server_warning">
+        Are you sure you want to delete this server?\n\nIf it is in use by any other actions, those
+        actions will stop working until they are reconfigured to use a different server!
+    </string>
+    <string name="yes_delete_the_server">DELETE THE SERVER!</string>
 
 </resources>

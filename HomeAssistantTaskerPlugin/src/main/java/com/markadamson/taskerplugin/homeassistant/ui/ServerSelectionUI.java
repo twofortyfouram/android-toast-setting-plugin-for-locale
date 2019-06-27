@@ -1,7 +1,9 @@
 package com.markadamson.taskerplugin.homeassistant.ui;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -92,13 +94,22 @@ public class ServerSelectionUI {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (mServers.size() > 0) {
-                            int idx = spnServers.getSelectedItemPosition();
-                            mServerStore.deleteServer(mIds.get(idx));
-                            mIds.remove(idx);
-                            mServers.remove(idx);
-                            mServerAdapter.notifyDataSetChanged();
-                        }
+                        if (mServers.size() > 0)
+                            new AlertDialog.Builder(activity)
+                                    .setTitle(R.string.are_you_sure)
+                                    .setMessage(R.string.delete_server_warning)
+                                    .setPositiveButton(R.string.yes_delete_the_server, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            int idx = spnServers.getSelectedItemPosition();
+                                            mServerStore.deleteServer(mIds.get(idx));
+                                            mIds.remove(idx);
+                                            mServers.remove(idx);
+                                            mServerAdapter.notifyDataSetChanged();
+                                        }
+                                    })
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .show();
                     }
                 }
         );
