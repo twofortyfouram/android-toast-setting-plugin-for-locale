@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.JobIntentService;
-import android.widget.Toast;
 
 import com.markadamson.taskerplugin.homeassistant.Constants;
 import com.markadamson.taskerplugin.homeassistant.TaskerPlugin;
@@ -17,6 +16,8 @@ import com.markadamson.taskerplugin.homeassistant.model.HAAPIException;
 import com.markadamson.taskerplugin.homeassistant.model.HAEntity;
 import com.markadamson.taskerplugin.homeassistant.model.HAServerStore;
 import com.twofortyfouram.log.Lumberjack;
+
+import java.util.UUID;
 
 /**
  * Created by marka on 14/06/2019.
@@ -38,6 +39,12 @@ public class ActionService extends JobIntentService {
         enqueueWork(context, ActionService.class, JOB_ID, work);
     }
 
+    private void signalUnknownServer(Intent intent) {
+        Bundle vars = new Bundle();
+        vars.putString(TaskerPlugin.Setting.VARNAME_ERROR_MESSAGE, "Unknown Server - Has it been deleted?");
+        TaskerPlugin.Setting.signalFinish(this, intent, TaskerPlugin.Setting.RESULT_CODE_FAILED, vars);
+    }
+
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
         Lumberjack.d("ActionService.onHandleWork");
@@ -47,17 +54,29 @@ public class ActionService extends JobIntentService {
         try {
             if (bundle.getInt(PluginBundleValues.BUNDLE_EXTRA_INT_VERSION_CODE) < 3 || bundle.getInt(Constants.BUNDLE_EXTRA_BUNDLE_TYPE) == Constants.BUNDLE_CALL_SERVICE) {
                 Lumberjack.d("Call Service", bundle);
+                UUID serverId = PluginBundleValues.getServer(bundle);
+                if (!servers.getServers().containsKey(serverId)) {
+                    signalUnknownServer(intent);
+                    return;
+                }
+
                 String[] service = PluginBundleValues.getService(bundle).split("\\.");
                 Lumberjack.d("Calling api...");
-                new HAAPI(servers.getServers().get(PluginBundleValues.getServer(bundle)))
+                new HAAPI(servers.getServers().get(serverId))
                         .callService(service[0], service[1], PluginBundleValues.getData(bundle));
                 Lumberjack.d("Signalling finish...");
                 TaskerPlugin.Setting.signalFinish(this, intent, TaskerPlugin.Setting.RESULT_CODE_OK, null);
             } else if (bundle.getInt(Constants.BUNDLE_EXTRA_BUNDLE_TYPE) == Constants.BUNDLE_GET_STATE) {
                 Lumberjack.d("Get State", bundle);
+                UUID serverId = GetStatePluginBundleValues.getServer(bundle);
+                if (!servers.getServers().containsKey(serverId)) {
+                    signalUnknownServer(intent);
+                    return;
+                }
+
                 String entityId = GetStatePluginBundleValues.getEntity(bundle);
                 Lumberjack.d("Calling api...");
-                HAEntity entity = new HAAPI(servers.getServers().get(PluginBundleValues.getServer(bundle)))
+                HAEntity entity = new HAAPI(servers.getServers().get(serverId))
                         .getEntity(entityId);
                 Bundle vars = new Bundle();
                 vars.putString(GetStatePluginBundleValues.getStateVariable(bundle), entity.getState());
@@ -70,9 +89,15 @@ public class ActionService extends JobIntentService {
                 TaskerPlugin.Setting.signalFinish(this, intent, TaskerPlugin.Setting.RESULT_CODE_OK, vars);
             } else {
                 Lumberjack.d("Render Template", bundle);
+                UUID serverId = RenderTemplatePluginBundleValues.getServer(bundle);
+                if (!servers.getServers().containsKey(serverId)) {
+                    signalUnknownServer(intent);
+                    return;
+                }
+
                 String template = RenderTemplatePluginBundleValues.getTemplate(bundle);
                 Lumberjack.d("Calling api...");
-                String result = new HAAPI(servers.getServers().get(RenderTemplatePluginBundleValues.getServer(bundle)))
+                String result = new HAAPI(servers.getServers().get(serverId))
                         .renderTemplate(template);
                 Bundle vars = new Bundle();
                 vars.putString(RenderTemplatePluginBundleValues.getVariable(bundle), result);
