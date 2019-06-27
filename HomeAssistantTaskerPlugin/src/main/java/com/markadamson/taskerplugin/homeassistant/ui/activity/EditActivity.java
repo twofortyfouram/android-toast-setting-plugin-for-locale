@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.markadamson.locale.sdk.client.ui.activity.AbstractAppCompatPluginActivity;
 import com.markadamson.taskerplugin.homeassistant.R;
 import com.markadamson.taskerplugin.homeassistant.TaskerPlugin;
+import com.markadamson.taskerplugin.homeassistant.Utils;
 import com.markadamson.taskerplugin.homeassistant.bundle.PluginBundleValues;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPI;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPIException;
@@ -42,7 +43,6 @@ import com.markadamson.taskerplugin.homeassistant.model.HAAPIResult;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPITask;
 import com.markadamson.taskerplugin.homeassistant.model.HAServer;
 import com.markadamson.taskerplugin.homeassistant.ui.ServerSelectionUI;
-import com.markadamson.taskerplugin.homeassistant.ui.VariableSelectUI;
 import com.twofortyfouram.log.Lumberjack;
 
 import net.jcip.annotations.NotThreadSafe;
@@ -172,10 +172,10 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
         mServiceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<String>());
         atvService = findViewById(R.id.atv_service);
         atvService.setAdapter(mServiceAdapter);
-        VariableSelectUI.init(variablesFromHost, findViewById(R.id.btn_service_variable), atvService);
+        Utils.initVariableSelectUI(variablesFromHost, findViewById(R.id.btn_service_variable), atvService);
 
         etServiceData = findViewById(R.id.et_service_data);
-        VariableSelectUI.init(variablesFromHost, findViewById(R.id.btn_service_data_variable), etServiceData);
+        Utils.initVariableSelectUI(variablesFromHost, findViewById(R.id.btn_service_data_variable), etServiceData);
 
         findViewById(R.id.btn_test_service).setOnClickListener(
                 new View.OnClickListener() {
@@ -197,6 +197,8 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
                     }
                 }
         );
+
+        Utils.checkBatteryOptimisation(this);
     }
 
     @Override

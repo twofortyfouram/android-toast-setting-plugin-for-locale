@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.markadamson.locale.sdk.client.ui.activity.AbstractAppCompatPluginActivity;
 import com.markadamson.taskerplugin.homeassistant.R;
 import com.markadamson.taskerplugin.homeassistant.TaskerPlugin;
+import com.markadamson.taskerplugin.homeassistant.Utils;
 import com.markadamson.taskerplugin.homeassistant.bundle.RenderTemplatePluginBundleValues;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPI;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPIException;
@@ -36,7 +37,6 @@ import com.markadamson.taskerplugin.homeassistant.model.HAAPIResult;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPITask;
 import com.markadamson.taskerplugin.homeassistant.model.HAServer;
 import com.markadamson.taskerplugin.homeassistant.ui.ServerSelectionUI;
-import com.markadamson.taskerplugin.homeassistant.ui.VariableSelectUI;
 import com.twofortyfouram.log.Lumberjack;
 
 import net.jcip.annotations.NotThreadSafe;
@@ -126,10 +126,10 @@ public final class EditRenderTemplateActivity extends AbstractAppCompatPluginAct
         String[] variablesFromHost = TaskerPlugin.getRelevantVariableList(getIntent().getExtras());
 
         etTemplate = findViewById(R.id.et_template);
-        VariableSelectUI.init(variablesFromHost, findViewById(R.id.btn_template_variable), etTemplate);
+        Utils.initVariableSelectUI(variablesFromHost, findViewById(R.id.btn_template_variable), etTemplate);
 
         etVariable = findViewById(R.id.et_variable);
-        VariableSelectUI.init(variablesFromHost, findViewById(R.id.btn_variable), etVariable);
+        Utils.initVariableSelectUI(variablesFromHost, findViewById(R.id.btn_variable), etVariable);
 
         findViewById(R.id.btn_test_template).setOnClickListener(
                 new View.OnClickListener() {
@@ -145,6 +145,8 @@ public final class EditRenderTemplateActivity extends AbstractAppCompatPluginAct
                     }
                 }
         );
+
+        Utils.checkBatteryOptimisation(this);
     }
 
     @Override

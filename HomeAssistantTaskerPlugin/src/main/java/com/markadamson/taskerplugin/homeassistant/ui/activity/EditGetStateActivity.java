@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.markadamson.locale.sdk.client.ui.activity.AbstractAppCompatPluginActivity;
 import com.markadamson.taskerplugin.homeassistant.R;
 import com.markadamson.taskerplugin.homeassistant.TaskerPlugin;
+import com.markadamson.taskerplugin.homeassistant.Utils;
 import com.markadamson.taskerplugin.homeassistant.bundle.GetStatePluginBundleValues;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPI;
 import com.markadamson.taskerplugin.homeassistant.model.HAAPIException;
@@ -43,7 +44,6 @@ import com.markadamson.taskerplugin.homeassistant.model.HAAPITask;
 import com.markadamson.taskerplugin.homeassistant.model.HAEntity;
 import com.markadamson.taskerplugin.homeassistant.model.HAServer;
 import com.markadamson.taskerplugin.homeassistant.ui.ServerSelectionUI;
-import com.markadamson.taskerplugin.homeassistant.ui.VariableSelectUI;
 import com.twofortyfouram.log.Lumberjack;
 
 import net.jcip.annotations.NotThreadSafe;
@@ -168,13 +168,13 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
         mEntityAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, new ArrayList<String>());
         atvEntity = findViewById(R.id.atv_entity);
         atvEntity.setAdapter(mEntityAdapter);
-        VariableSelectUI.init(variablesFromHost, findViewById(R.id.btn_entity_variable), atvEntity);
+        Utils.initVariableSelectUI(variablesFromHost, findViewById(R.id.btn_entity_variable), atvEntity);
 
         etStateVariable = findViewById(R.id.et_state_variable);
-        VariableSelectUI.init(variablesFromHost, findViewById(R.id.btn_state_variable), etStateVariable);
+        Utils.initVariableSelectUI(variablesFromHost, findViewById(R.id.btn_state_variable), etStateVariable);
 
         etAttrsVariable = findViewById(R.id.et_attrs_variable);
-        VariableSelectUI.init(variablesFromHost, findViewById(R.id.btn_attrs_variable), etAttrsVariable);
+        Utils.initVariableSelectUI(variablesFromHost, findViewById(R.id.btn_attrs_variable), etAttrsVariable);
 
         findViewById(R.id.btn_test_entity).setOnClickListener(
                 new View.OnClickListener() {
@@ -190,6 +190,8 @@ public final class EditGetStateActivity extends AbstractAppCompatPluginActivity 
                     }
                 }
         );
+
+        Utils.checkBatteryOptimisation(this);
     }
 
     @Override

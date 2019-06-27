@@ -36,5 +36,12 @@
     <string name="test_template">Test Template</string>
     <string name="render_template">Render Template</string>
     <string name="select_variable">Select Variable</string>
+    <string name="disable_battery_optimization">Disable Battery Optimization?</string>
+    <string name="battery_optimization_dialog">
+        Home Assistant Plug-In for Tasker is currently being optimized for battery. This means that
+        it may be killed by the system and stop working unexpectedly.\n\nTo prevent this, it\'s
+        recommended that you change the battery optimization setting for the plug-in to \'Don\'t
+        Optimize\'.\n\nWould you like to go to settings to change this now?
+    </string>
 
 </resources>
