@@ -8,6 +8,8 @@ This is a Tasker plug-in to allow calling services on and getting entity states 
 
 ## Usage
 
+**PLEASE NOTE: If your device is on Android 6.0 or higher, you should disable Battery Optimization for this plugin (and Tasker) - otherwise you may find that it doesn't work properly!**
+
 ### Add A Server
 - Generate a [Long-Lived Access Token](https://www.home-assistant.io/docs/authentication/) in Home Assistant.
 - Create a new Task in Tasker.
