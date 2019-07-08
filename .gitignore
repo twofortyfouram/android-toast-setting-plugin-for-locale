@@ -10,3 +10,4 @@ bin/
 build/
 gen/
 local.properties
+HomeAssistantTaskerPlugin/release/

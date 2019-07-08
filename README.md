@@ -1,6 +1,9 @@
 # Home Assistant Plug-In for Tasker
 This is a Tasker plug-in to allow calling services on and getting entity states from a Home Assistant installation.
 
+# Available on Google Play
+https://play.google.com/store/apps/details?id=com.markadamson.taskerplugin.homeassistant
+
 ## Requirements
 - Android 4.0 (API 14)
 - [Tasker](https://tasker.joaoapps.com/)
@@ -43,5 +46,4 @@ Remember to always include the leading `%`
 
 ## To Do
 - [x] Actions
-- [ ] Conditions
 - [x] Tasker Variables

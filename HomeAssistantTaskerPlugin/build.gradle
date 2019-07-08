@@ -2,16 +2,16 @@ apply plugin: 'com.android.application'
 apply plugin: 'findbugs'
 
 dependencies {
-    compile group:'net.jcip', name:'jcip-annotations', version:"${JCIP_ANNOTATION_VERSION_MATCHER}"
-    compile group:'com.android.support', name:'support-annotations', version:"${ANDROID_SUPPORT_VERSION_MATCHER}"
-    compile group:'com.android.support', name:'appcompat-v7', version:"${ANDROID_SUPPORT_VERSION_MATCHER}"
-    compile group:'com.twofortyfouram', name:'android-annotation', version:"${TWOFORTYFOURAM_ANNOTATION_VERSION_MATCHER}"
-    compile group:'com.twofortyfouram', name:'android-assertion', version:"${TWOFORTYFOURAM_ASSERTION_VERSION_MATCHER}"
-    compile group:'com.twofortyfouram', name:'android-plugin-api-for-locale', version:"${TWOFORTYFOURAM_PLUGIN_API_VERSION_MATCHER}"
-    compile group:'com.twofortyfouram', name:'android-plugin-client-sdk-for-locale', version:"${TWOFORTYFOURAM_PLUGIN_CLIENT_SDK_VERSION_MATCHER}"
-    compile group:'com.twofortyfouram', name:'android-spackle', version:"${TWOFORTYFOURAM_SPACKLE_VERSION_MATCHER}"
+    implementation group:'net.jcip', name:'jcip-annotations', version:"${JCIP_ANNOTATION_VERSION_MATCHER}"
+    implementation group:'com.android.support', name:'support-annotations', version:"${ANDROID_SUPPORT_VERSION_MATCHER}"
+    implementation group:'com.android.support', name:'appcompat-v7', version:"${ANDROID_SUPPORT_VERSION_MATCHER}"
+    implementation group:'com.twofortyfouram', name:'android-annotation', version:"${TWOFORTYFOURAM_ANNOTATION_VERSION_MATCHER}"
+    implementation group:'com.twofortyfouram', name:'android-assertion', version:"${TWOFORTYFOURAM_ASSERTION_VERSION_MATCHER}"
+    implementation group:'com.twofortyfouram', name:'android-plugin-api-for-locale', version:"${TWOFORTYFOURAM_PLUGIN_API_VERSION_MATCHER}"
+    implementation group:'com.twofortyfouram', name:'android-plugin-client-sdk-for-locale', version:"${TWOFORTYFOURAM_PLUGIN_CLIENT_SDK_VERSION_MATCHER}"
+    implementation group:'com.twofortyfouram', name:'android-spackle', version:"${TWOFORTYFOURAM_SPACKLE_VERSION_MATCHER}"
 
-    androidTestCompile group:'com.twofortyfouram', name:'android-test', version:"${TWOFORTYFOURAM_TEST_VERSION_MATCHER}"
+    androidTestImplementation group:'com.twofortyfouram', name:'android-test', version:"${TWOFORTYFOURAM_TEST_VERSION_MATCHER}"
 }
 
 android {
@@ -28,6 +28,8 @@ android {
         // dependencies contain localizations.
         // The last two are for support of pseudolocales in debug builds.
         resConfigs 'en', 'en-rUS', 'en_XA', 'ar_XB'
+
+        vectorDrawables.useSupportLibrary = true
     }
 
     if (RELEASE_KEYSTORE_PATH && RELEASE_KEYSTORE_PASSWORD && RELEASE_KEY_ALIAS && RELEASE_KEY_ALIAS_PASSWORD) {
