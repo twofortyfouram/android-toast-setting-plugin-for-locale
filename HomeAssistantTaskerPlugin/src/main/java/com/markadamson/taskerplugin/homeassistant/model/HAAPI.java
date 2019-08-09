@@ -212,16 +212,11 @@ public class HAAPI {
             os.write(outputBytes);
             os.close();
 
-            InputStream inputStream = httpConn.getInputStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-            int bsize = 100;
-            char[] buffer = new char[bsize];
             StringBuilder sb = new StringBuilder();
-
-            while (bufferedReader.read(buffer, 0, bsize) != -1)
-                sb.append(buffer);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(httpConn.getInputStream()));
+            int c;
+            while ((c = reader.read()) != -1)
+                sb.append((char) c);
             return sb.toString();
         } catch (IOException e) {
             if (httpConn != null)
