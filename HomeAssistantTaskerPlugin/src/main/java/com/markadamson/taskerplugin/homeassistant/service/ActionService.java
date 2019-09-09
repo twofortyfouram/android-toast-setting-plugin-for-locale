@@ -108,7 +108,9 @@ public class ActionService extends JobIntentService {
         } catch (HAAPIException e) {
             Lumberjack.e(e.getMessage());
             e.printStackTrace();
-            TaskerPlugin.Setting.signalFinish(this, intent, TaskerPlugin.Setting.RESULT_CODE_FAILED, null);
+            Bundle vars = new Bundle();
+            vars.putString(TaskerPlugin.Setting.VARNAME_ERROR_MESSAGE, e.getMessage());
+            TaskerPlugin.Setting.signalFinish(this, intent, TaskerPlugin.Setting.RESULT_CODE_FAILED, vars);
         }
     }
 }

@@ -259,7 +259,7 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
 
     @Override
     public int requestedTimeoutMS() {
-        return 0;
+        return 10000;
     }
 
     @Override
@@ -270,26 +270,17 @@ public final class EditActivity extends AbstractAppCompatPluginActivity {
     }
 
     private boolean canSave() {
-        boolean result = false;
-
-        if (mServerUI.serverCount() == 0)
+        if (mServerUI.serverCount() == 0) {
             Toast.makeText(this, "Please select a Server", Toast.LENGTH_SHORT).show();
-        else if (atvService.getText().toString().isEmpty())
-            Toast.makeText(this, "Please select a Service", Toast.LENGTH_SHORT).show();
-        else {
-            result = true;
-
-            if (!etServiceData.getText().toString().isEmpty())
-                try {
-                    new JSONObject(etServiceData.getText().toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Toast.makeText(this, "Invalid Service Data JSON", Toast.LENGTH_SHORT).show();
-                    result = false;
-                }
+            return false;
         }
 
-        return result;
+        if (atvService.getText().toString().isEmpty()) {
+            Toast.makeText(this, "Please select a Service", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
     }
 
     @Override

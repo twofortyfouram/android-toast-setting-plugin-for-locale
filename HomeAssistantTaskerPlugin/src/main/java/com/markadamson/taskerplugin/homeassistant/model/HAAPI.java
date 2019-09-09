@@ -104,17 +104,19 @@ public class HAAPI {
             httpConn.setDoOutput(true);
 
             if (data != null &! data.isEmpty()) {
-                JSONObject jsonBody = new JSONObject(data);
-                byte[] outputBytes = jsonBody.toString().getBytes("UTF-8");
                 OutputStream os = httpConn.getOutputStream();
-                os.write(outputBytes);
+                os.write(data.getBytes("UTF-8"));
                 os.close();
             }
 
-            InputStream inputStream = httpConn.getInputStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            bufferedReader.readLine();
+            if (httpConn.getResponseCode() != 200) {
+                InputStream errorStream = httpConn.getErrorStream();
+                InputStreamReader errorStreamReader = new InputStreamReader(errorStream);
+                BufferedReader bufferedReader = new BufferedReader(errorStreamReader);
+                JSONObject jsonResult = new JSONObject(bufferedReader.readLine());
+                throw new HAAPIException(jsonResult.getString("message"));
+            }
+
         } catch (IOException e) {
             if (httpConn != null)
                 try {
