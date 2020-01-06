@@ -39,7 +39,9 @@
             android:fullBackupContent="true"
             android:hardwareAccelerated="true"
             android:icon="@mipmap/ic_launcher"
-            android:label="@string/app_name" tools:ignore="UnusedAttribute">
+            android:label="@string/app_name"
+            tools:ignore="UnusedAttribute"
+            android:usesCleartextTraffic="true">
 
         <activity
             android:name="com.markadamson.taskerplugin.homeassistant.ui.activity.EditActivity"
