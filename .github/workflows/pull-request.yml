@@ -1,0 +1,84 @@
+# Expected Secrets
+# GCLOUD_JSON_KEY_BASE_64
+
+name: Pull Request
+
+on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - '.github/dependabot.yml'
+      - '.github/PULL_REQUEST_TEMPLATE.md'
+      - '.github/ISSUE_TEMPLATE/**'
+      - 'README.md'
+      - 'LICENSE'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+      contents: read
+    steps:
+      - name: Checkout
+        timeout-minutes: 1
+        uses: actions/checkout@v2
+
+      - name: Gradle Validation
+        timeout-minutes: 1
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: Set up Java
+        timeout-minutes: 1
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: 15
+
+      - name: Setup Secrets
+        env:
+          FIREBASE_TEST_LAB_API_KEY_BASE_64: ${{ secrets.GCLOUD_JSON_KEY_BASE_64 }}
+          FIREBASE_API_KEY_FILE_NAME: gcloud-key.json
+        run: |
+          FIREBASE_API_KEY_FILE_PATH=${HOME}/${FIREBASE_API_KEY_FILE_NAME}
+          echo $FIREBASE_TEST_LAB_API_KEY_BASE_64 | base64 --decode > ${FIREBASE_API_KEY_FILE_PATH}
+
+      - name: Build
+        timeout-minutes: 15
+        env:
+          ORG_GRADLE_PROJECT_isCoverageEnabled: false
+          ORG_GRADLE_PROJECT_localePluginMavenUser: ${{ secrets.GITHUB_ACTOR }}
+          ORG_GRADLE_PROJECT_localePluginMavenPassword: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./gradlew assembleDebug assembleAndroidTest --no-daemon
+
+      - name: Test
+        timeout-minutes: 20
+        env:
+          ORG_GRADLE_PROJECT_isCoverageEnabled: false
+          GCLOUD_KEY_FILENAME: gcloud-key.json
+          ORG_GRADLE_PROJECT_localePluginMavenUser: ${{ secrets.GITHUB_ACTOR }}
+          ORG_GRADLE_PROJECT_localePluginMavenPassword: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          GCLOUD_KEY_PATH=${HOME}/${GCLOUD_KEY_FILENAME}
+
+          ./gradlew runFlank --no-daemon --parallel --stacktrace -PtoastPluginFirebaseTestLabServiceAccountKeyPath=${GCLOUD_KEY_PATH}
+
+      - name: Collect Artifacts
+        timeout-minutes: 1
+        env:
+          ARTIFACTS_DIR_NAME: artifacts
+          TEST_RESULTS_FILE_NAME: test_results.zip
+        run: |
+          ARTIFACTS_DIR_PATH=~/${ARTIFACTS_DIR_NAME}
+          mkdir ${ARTIFACTS_DIR_PATH}
+
+          TEST_RESULTS_ZIP_PATH=${ARTIFACTS_DIR_PATH}/${TEST_RESULTS_FILE_NAME}
+          zip -r ${TEST_RESULTS_ZIP_PATH} . -i *build/outputs/androidTest-results/*
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        timeout-minutes: 1
+        with:
+          name: Test results
+          path: ~/artifacts
